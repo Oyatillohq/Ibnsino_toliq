@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IBN SINO EDUCATION - Kimyo va Biologiya Akademiyasi</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Vue.js CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <!-- Navbar -->
+        <nav class="navbar" :class="{ 'scrolled': isScrolled }">
+            <div class="container navbar-content">
+                <a href="#" class="logo-link">
+                    <span class="logo-text">IBN SINO <span>EDUCATION</span></span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="desktop-menu">
+                    <a v-for="item in menuItems" :key="item.text" :href="item.link" class="nav-link">{{ item.text }}</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="mobile-btn" @click="toggleMenu" aria-label="Menu">
+                    <div class="hamburger" :class="{ 'active': isMenuOpen }">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Mobile Overlay -->
+        <div class="mobile-menu" :class="{ 'active': isMenuOpen }">
+            <a v-for="item in menuItems" :key="item.text" :href="item.link" class="mobile-nav-item" @click="toggleMenu">
+                {{ item.text }}
+            </a>
+            <a :href="contactData.telegram" class="btn btn-primary" target="_blank">Telegramda bog'lanish</a>
+        </div>
+
+        <!-- 
+        ================================================================
+            MAIN CONTENT AREA
+        ================================================================
+        -->
+        <main>
+            <!-- SECTION: HERO -->
+            <section id="home" class="hero">
+                <div class="hero-dna">
+                    <div v-for="p in heroParticles" :key="p.id" class="dna-particle" :style="{
+                            left: p.x + '%',
+                            top: p.y + '%',
+                            width: p.size + 'px',
+                            height: p.size + 'px',
+                            opacity: p.opacity,
+                            animationDelay: p.delay + 's',
+                            animationDuration: p.duration + 's'
+                        }">
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="hero-content reveal reveal-up">
+                        <span class="hero-badge">Professional Akademiya</span>
+                        <h1 class="hero-title">IBN SINO EDUCATION</h1>
+                        <p class="hero-subtitle">
+                            Universitetga kirish uchun Kimyo va Biologiya fanlaridan chuqurlashtirilgan o'quv
+                            akademiyasi.
+                        </p>
+                        <div class="hero-btns">
+                            <a href="#contact" class="btn btn-primary">Hoziroq bog'laning</a>
+                            <a :href="contactData.telegram" class="btn btn-accent" target="_blank">Telegram</a>
+                            <a :href="'tel:' + contactData.phones[0].replace(/\s/g, '')"
+                                class="btn btn-primary">Qo'ng'iroq qilish</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: RESULTS & STATS -->
+            <section id="results" class="section-padding bg-light reveal">
+                <div class="container">
+                    <div class="section-header reveal reveal-up">
+                        <h2 class="section-title">Bizning Natijalarimiz</h2>
+                        <p class="section-desc">Akademiyamizning muvaffaqiyati o'quvchilarimizning natijalarida namoyon
+                            bo'ladi.</p>
+                    </div>
+                    <div class="results-grid">
+                        <div v-for="(stat, index) in animatedStats" :key="stat.label" class="stat-item reveal reveal-up"
+                            :class="'delay-' + (index * 100)">
+                            <span class="stat-val">{{ stat.currentValue }}{{ stat.suffix }}</span>
+                            <span class="stat-label">{{ stat.label }}</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: ACADEMIC SUBJECTS -->
+            <section id="subjects" class="section-padding bg-white">
+                <div class="container">
+                    <div class="section-header reveal reveal-up">
+                        <h2 class="section-title">O'quv Yo'nalishlari</h2>
+                        <p class="section-desc">Akademiyamizda fanlar mutaxassislik darajasiga ko'ra guruhlangan.</p>
+                    </div>
+
+                    <div v-for="(cat, catIndex) in subjects" :key="cat.category" class="reveal reveal-up"
+                        :style="{ marginTop: catIndex > 0 ? '4rem' : '0' }">
+                        <h3
+                            style="color: var(--color-primary); margin-bottom: 2rem; border-left: 4px solid var(--color-accent); padding-left: 1rem;">
+                            {{ cat.category }}
+                        </h3>
+                        <div class="features-grid">
+                            <div v-for="(item, index) in cat.items" :key="item.name"
+                                class="feature-card reveal reveal-scale" :class="'delay-' + (index * 100)">
+                                <div class="feature-icon-box"
+                                    :style="{ background: catIndex === 0 ? 'rgba(0, 191, 166, 0.1)' : 'rgba(50, 140, 193, 0.1)', color: catIndex === 0 ? 'var(--color-accent)' : 'var(--color-secondary)' }">
+                                    <i :data-lucide="item.icon"></i>
+                                </div>
+                                <h4>{{ item.name }}</h4>
+                                <p style="color: var(--color-text-light); margin-top: 0.5rem; font-size: 0.95rem;">{{
+                                    item.desc }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: CERTIFICATES -->
+            <section id="certificates" class="section-padding bg-white">
+                <div class="container">
+                    <div class="section-header reveal reveal-up">
+                        <h2 class="section-title">Milliy Sertifikat Natijalari</h2>
+                        <p class="section-desc">O'quvchilarimiz Kimyo va Biologiya fanlaridan A+ va A darajali Milliy
+                            sertifikatlarni qo'lga kiritishgan.</p>
+                    </div>
+                    <div class="cert-grid">
+                        <div v-for="(cert, index) in certificates" :key="cert.id" class="cert-card reveal reveal-scale"
+                            :class="'delay-' + (index * 100)">
+                            <img :src="cert.image" alt="Certificate" class="cert-image">
+                            <div class="cert-content">
+                                <span class="cert-badge">{{ cert.type }} Daraja</span>
+                                <h3 style="margin-top: 1rem;">Natija: {{ cert.score }} ball</h3>
+                                <p style="color: var(--color-text-light); font-size: 0.9rem;">Yil: {{ cert.date }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: ABOUT ACADEMY -->
+            <section id="about" class="section-padding bg-light">
+                <div class="container">
+                    <div class="reveal reveal-up" style="max-width: 800px; margin: 0 auto; text-align: center;">
+                        <h2 class="section-title">Biz Haqimizda</h2>
+                        <p
+                            style="font-size: 1.25rem; color: var(--color-text-light); margin-bottom: 2rem; line-height: 1.8;">
+                            {{ academyInfo.mission }}
+                        </p>
+                        <div
+                            style="background: white; padding: 3rem; border-radius: 32px; box-shadow: var(--shadow-premium);">
+                            <p style="color: var(--color-text-light); font-size: 1.1rem;">
+                                O'quv markazimiz 20 yildan ortiq vaqtdan beri bo'lajak shifokorlar va olimlarni
+                                tayyorlab kelmoqda. 7-sinfdan boshlab qabul qilinadigan o'quv dasturi DTM va xalqaro
+                                standartlar asosida ham O'zbek, ham Rus tillarida olib boriladi.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: ACADEMY ATMOSPHERE (MUHIT) -->
+            <section id="gallery" class="section-padding bg-white">
+                <div class="container">
+                    <div class="section-header reveal reveal-up">
+                        <h2 class="section-title">Bizning Muhit</h2>
+                        <p class="section-desc">O'quvchilarimiz uchun yaratilgan zamonaviy va qulay sharoitlar bilan
+                            tanishing.</p>
+                    </div>
+                    <div class="cert-grid">
+                        <div v-for="(img, index) in gallery" :key="index" class="cert-card reveal reveal-scale"
+                            :class="'delay-' + (index % 3 * 100)">
+                            <img :src="img" alt="Academy Atmosphere" class="cert-image">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: ADVANTAGES -->
+            <section id="features" class="section-padding bg-white">
+                <div class="container">
+                    <div class="section-header reveal reveal-up">
+                        <h2 class="section-title">Akademiya Afzalliklari</h2>
+                    </div>
+                    <div class="features-grid">
+                        <div v-for="(f, index) in features" :key="f.title" class="feature-card reveal reveal-up"
+                            :class="'delay-' + (index * 100)">
+                            <div class="feature-icon-box">
+                                <i :data-lucide="f.icon"></i>
+                            </div>
+                            <h3>{{ f.title }}</h3>
+                            <p style="color: var(--color-text-light); margin-top: 0.75rem;">{{ f.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: CONTACT & LOCATION -->
+            <section id="contact" class="section-padding bg-light">
+                <div class="container">
+                    <div class="section-header reveal reveal-up">
+                        <h2 class="section-title">Bizning Manzilimiz</h2>
+                    </div>
+                    <div class="contact-layout">
+                        <div class="contact-card reveal reveal-left">
+                            <h3>Bog'lanish</h3>
+                            <div class="phone-list">
+                                <a v-for="phone in contactData.phones" :key="phone"
+                                    :href="'tel:' + phone.replace(/\s/g, '')" class="phone-item">
+                                    <i data-lucide="phone"></i> {{ phone }}
+                                </a>
+                                <a :href="contactData.telegram" class="phone-item" target="_blank">
+                                    <i data-lucide="send"></i> @Ibn_Sino_Education
+                                </a>
+                            </div>
+                        </div>
+                        <div class="reveal reveal-right">
+                            <div class="map-placeholder">
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3245.895943717643!2d71.2522892718998!3d40.38575108464176!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38bb01cce3a664bf%3A0x655ad28fe9cf1574!2sIbn%20Sino%20Education!5e0!3m2!1suz!2s!4v1770474783215!5m2!1suz!2s"
+                                    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container footer-content">
+                <div class="footer-logo">IBN SINO <span>EDUCATION</span></div>
+                <div style="display: flex; gap: 1.5rem;">
+                    <a :href="contactData.telegram" style="color: white;"><i data-lucide="send"></i></a>
+                    <a href="#" style="color: white;"><i data-lucide="instagram"></i></a>
+                </div>
+                <div class="footer-bottom">
+                    &copy; 2026 IBN SINO EDUCATION. Barcha huquqlar himoyalangan.
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
