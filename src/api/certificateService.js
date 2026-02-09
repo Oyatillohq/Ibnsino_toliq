@@ -2,7 +2,13 @@ import { supabase } from './supabase'
 
 export const certificateService = {
     async getGroupedCertificates({ year, page = 1 }) {
-        if (!supabase) return { data: [], count: 0 }
+        if (!supabase) {
+            return {
+                data: [],
+                count: 0,
+                error: "Supabase ulanishi mavjud emas. Netlify-da VITE_SUPABASE_URL va VITE_SUPABASE_ANON_KEY sozlangani va sayt qayta deploy qilinganiga ishonch hosil qiling."
+            }
+        }
         try {
             const pageSize = 12
             // View-dan ma'lumot olish
