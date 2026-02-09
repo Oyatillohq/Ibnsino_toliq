@@ -13,7 +13,8 @@ const selectedGroup = ref(null)
 const currentCertIndex = ref(0)
 const isModalActive = ref(false)
 
-const loadData = async () => {
+const loadData = async (resetPage = false) => {
+  if (resetPage) page.value = 1
   loading.value = true
   try {
     const result = await certificateService.getGroupedCertificates({ 
@@ -55,16 +56,36 @@ const nextCert = () => {
     }
 }
 
-onMounted(loadData)
+const handleKeydown = (e) => {
+  if (!isModalActive.value) return
+  if (e.key === 'Escape') closeModal()
+  if (e.key === 'ArrowLeft') prevCert()
+  if (e.key === 'ArrowRight') nextCert()
+}
+
+onMounted(() => {
+    loadData()
+    window.addEventListener('keydown', handleKeydown)
+})
+
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
-  <section id="certificates" class="section-padding">
+  <section id="certificates" class="section-padding" aria-labelledby="certs-title">
     <div class="container">
       <div class="section-header reveal reveal-left">
-        <h2 class="section-title">O'quvchilar Natijalari</h2>
+        <h2 id="certs-title" class="section-title">O'quvchilar Natijalari</h2>
         <div class="filters">
-           <select v-model="yearFilter" @change="loadData" class="filter-select">
+           <select 
+             v-model="yearFilter" 
+             @change="loadData(true)" 
+             class="filter-select"
+             aria-label="Filter by year"
+           >
              <option value="">Barcha yillar</option>
              <option value="2024">2024</option>
              <option value="2025">2025</option>
@@ -72,7 +93,7 @@ onMounted(loadData)
         </div>
       </div>
 
-      <div v-if="loading" class="loading">Yuklanmoqda...</div>
+      <div v-if="loading" class="loading" role="status">Yuklanmoqda...</div>
       
       <div v-else-if="groups.length > 0" class="certificate-grid reveal reveal-left">
         <CertificateCard 
@@ -86,31 +107,64 @@ onMounted(loadData)
       <div v-else class="empty-state">
         <p>Hozircha tanlangan yil bo'yicha natijalar mavjud emas.</p>
       </div>
+
+      <!-- Pagination -->
+      <div v-if="groups.length > 0" class="pagination reveal reveal-up">
+        <button 
+          @click="page--; loadData()" 
+          :disabled="page === 1" 
+          class="btn-nav"
+          aria-label="Oldingi sahifa"
+        >
+          <ChevronLeft :size="20" />
+          <span>Oldingi</span>
+        </button>
+        <span class="page-info">Sahifa {{ page }}</span>
+        <button 
+          @click="page++; loadData()" 
+          :disabled="groups.length < 12" 
+          class="btn-nav"
+          aria-label="Keyingi sahifa"
+        >
+          <span>Keyingi</span>
+          <ChevronRight :size="20" />
+        </button>
+      </div>
     </div>
 
     <!-- Modal for viewing certificates -->
-    <div class="modal" :class="{ active: isModalActive }" @click.self="closeModal">
-      <div class="modal-content" v-if="selectedGroup">
-        <button class="modal-close" @click="closeModal">
+    <div 
+      class="modal" 
+      :class="{ active: isModalActive }" 
+      @click.self="closeModal"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="selectedGroup ? selectedGroup.student_name + ' sertifikatlari' : 'Sertifikat ko\'rish'"
+    >
+      <div class="modal-content" v-if="selectedGroup" @click.stop>
+        <button class="modal-close" @click="closeModal" aria-label="Close modal">
           <X :size="32" />
         </button>
         
         <div class="modal-image-wrapper">
           <img :src="selectedGroup.certificates[currentCertIndex].image_url" 
                class="full-cert-img" 
-               alt="Certificate">
+               alt="Sertifikat rasmi"
+               loading="lazy">
           
           <button v-if="selectedGroup.certificates.length > 1" 
                   class="nav-btn prev" 
                   @click="prevCert" 
-                  :disabled="currentCertIndex === 0">
+                  :disabled="currentCertIndex === 0"
+                  aria-label="Previous certificate">
             <ChevronLeft :size="40" />
           </button>
           
           <button v-if="selectedGroup.certificates.length > 1" 
                   class="nav-btn next" 
                   @click="nextCert" 
-                  :disabled="currentCertIndex === selectedGroup.certificates.length - 1">
+                  :disabled="currentCertIndex === selectedGroup.certificates.length - 1"
+                  aria-label="Next certificate">
             <ChevronRight :size="40" />
           </button>
         </div>
@@ -213,5 +267,43 @@ onMounted(loadData)
     border-radius: 50px;
     display: inline-block;
     font-size: 0.9rem;
+}
+
+.pagination {
+  margin-top: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.btn-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+}
+
+.btn-nav:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  background: rgba(0, 191, 166, 0.1);
+}
+
+.btn-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.page-info {
+  font-weight: 700;
+  color: var(--color-accent);
+  font-size: 1.1rem;
 }
 </style>

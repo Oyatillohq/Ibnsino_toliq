@@ -94,20 +94,23 @@ CREATE POLICY "Public Read Certificates" ON certificates FOR SELECT USING (true)
 CREATE POLICY "Public Read Gallery" ON gallery FOR SELECT USING (true);
 
 -- 6.2 Admin Access (Authenticated)
-CREATE POLICY "Admin All Students" ON students TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Admin All Subjects" ON subjects TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Admin All Certificates" ON certificates TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Admin All Gallery" ON gallery TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Admin Read Logs" ON audit_logs TO authenticated USING (true);
+-- Only users present in auth.users can manage data
+CREATE POLICY "Admin All Students" ON students TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Admin All Subjects" ON subjects TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Admin All Certificates" ON certificates TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Admin All Gallery" ON gallery TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Admin Read Logs" ON audit_logs TO authenticated USING (auth.uid() IS NOT NULL);
 
 -- 6.3 Storage Policies
 -- Assuming bucket name is 'media'
--- Policy for public read from public bucket is default. 
--- Policy for authenticated upload:
-/*
-CREATE POLICY "Admin Upload" ON storage.objects FOR INSERT TO authenticated 
-WITH CHECK (bucket_id = 'media');
-*/
+-- Allow public read of certificates
+CREATE POLICY "Public Read Media" ON storage.objects FOR SELECT USING (bucket_id = 'media');
+
+-- Allow authenticated admins to upload and delete their files
+CREATE POLICY "Admin Manage Media" ON storage.objects 
+FOR ALL TO authenticated 
+USING (bucket_id = 'media' AND auth.uid() IS NOT NULL)
+WITH CHECK (bucket_id = 'media' AND auth.uid() IS NOT NULL);
 
 -- 7. AUDIT TRIGGER FUNCTION
 CREATE OR REPLACE FUNCTION log_change()

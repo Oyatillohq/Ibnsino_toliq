@@ -13,6 +13,17 @@ const app = createApp({
             if (el) el.click();
         };
 
+        const validateFile = (file) => {
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                return "Faqat JPG, PNG yoki WEBP rasmlarni yuklash mumkin.";
+            }
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                return "Rasm hajmi 5MB dan oshmasligi kerak.";
+            }
+            return null;
+        };
+
         // --- AUTH & COMMON STATE ---
         const email = ref('');
         const password = ref('');
@@ -43,6 +54,12 @@ const app = createApp({
         const onFileChange = (event, index) => {
             const file = event.target.files[0];
             if (file) {
+                const errorMsg = validateFile(file);
+                if (errorMsg) {
+                    alert(errorMsg);
+                    event.target.value = '';
+                    return;
+                }
                 certificateSlots.value[index].file = file;
                 certificateSlots.value[index].preview = URL.createObjectURL(file);
             }
@@ -236,7 +253,15 @@ const app = createApp({
 
         const previewGalleryImage = (event) => {
             const file = event.target.files[0];
-            if (file) galleryPreview.value = URL.createObjectURL(file);
+            if (file) {
+                const errorMsg = validateFile(file);
+                if (errorMsg) {
+                    alert(errorMsg);
+                    event.target.value = '';
+                    return;
+                }
+                galleryPreview.value = URL.createObjectURL(file);
+            }
         };
 
         return {

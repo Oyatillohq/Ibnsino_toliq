@@ -7,11 +7,23 @@ defineProps({
 </script>
 
 <template>
-  <div class="certificate-card" @click="$emit('select', group)">
+  <div 
+    class="certificate-card" 
+    @click="$emit('select', group)"
+    role="button"
+    tabindex="0"
+    :aria-label="group.student_name + ' sertifikatlarini ko\'rish'"
+    @keydown.enter="$emit('select', group)"
+  >
     <div class="cert-img-container">
-      <img :src="group.certificates[0].image_url" :alt="group.student_name" class="certificate-image">
+      <img 
+        :src="group.certificates[0].image_url" 
+        :alt="group.student_name + ' natijalari'" 
+        class="certificate-image"
+        loading="lazy"
+      >
       <div class="cert-overlay">
-        <Eye :size="32" color="var(--color-accent)" />
+        <Eye :size="32" color="var(--color-accent)" aria-hidden="true" />
         <span>Ko'rish</span>
       </div>
     </div>

@@ -13,16 +13,36 @@
     --color-bg: #071A2F;
     --color-surface: rgba(255, 255, 255, 0.05);
     --color-text: #FFFFFF;
-    --color-text-light: rgba(255, 255, 255, 0.7);
-    --color-border: rgba(255, 255, 255, 0.1);
-
-    --grad-premium: linear-gradient(135deg, #071A2F 0%, #0B3C5D 40%, #328CC1 70%, #00BFA6 100%);
+    --color-text-light: rgba(255, 255, 255, 0.85);
+    /* Slightly brighter for better contrast on dark navy */
+    --color-border: rgba(255, 255, 255, 0.15);
+    --grad-premium: linear-gradient(135deg, #071A2F 0%, #0B3C5D 40%, #082a46 70%, #00BFA6 100%);
     --grad-button: linear-gradient(135deg, #0B3C5D, #328CC1);
     --grad-button-hover: linear-gradient(135deg, #328CC1, #00BFA6);
 
     --transition-premium: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+    --accent-soft: rgba(0, 191, 166, 0.15);
     --navbar-height: 80px;
+}
+
+/* Accessibility: Support users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Global Focus Styles */
+:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
 }
 
 * {
