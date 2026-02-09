@@ -8,8 +8,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
   plugins: [
     vue(),
-    process.env.NODE_ENV !== 'production' ? vueDevTools() : null,
-  ].filter(Boolean),
+    // Only use devtools in development mode
+    ...(process.env.NODE_ENV !== 'production' ? [vueDevTools()] : []),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

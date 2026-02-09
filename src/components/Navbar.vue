@@ -1,11 +1,23 @@
 <script setup>
 import { useTheme } from '../composables/useTheme'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Sun, Moon } from 'lucide-vue-next'
 
 const { isDarkMode, toggleTheme } = useTheme()
 const isScrolled = ref(false)
 const isMenuOpen = ref(false)
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 20
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>

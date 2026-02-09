@@ -44,12 +44,16 @@ onMounted(loadData)
 
       <div v-if="loading" class="loading">Yuklanmoqda...</div>
       
-      <div v-else class="certificate-grid">
+      <div v-else-if="groups.length > 0" class="certificate-grid">
         <CertificateCard 
           v-for="group in groups" 
           :key="group.student_id" 
           :group="group" 
         />
+      </div>
+      
+      <div v-else class="empty-state">
+        <p>Hozircha tanlangan yil bo'yicha natijalar mavjud emas.</p>
       </div>
     </div>
   </section>
@@ -57,6 +61,7 @@ onMounted(loadData)
 
 <style scoped>
 .loading { text-align: center; padding: 4rem; color: var(--color-accent); font-weight: bold; }
+.empty-state { text-align: center; padding: 4rem; color: var(--color-text-light); }
 .filters { margin-bottom: 2rem; display: flex; justify-content: center; }
 .filter-select { 
   background: var(--color-surface); 
