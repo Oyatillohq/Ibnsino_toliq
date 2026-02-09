@@ -1016,6 +1016,16 @@ body {
     }
 }
 
+.reveal,
+.reveal-up,
+.reveal-left,
+.reveal-right,
+.reveal-scale {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+}
+
 .reveal-visible {
     opacity: 1 !important;
     transform: translate(0, 0) rotate(0) scale(1) !important;
