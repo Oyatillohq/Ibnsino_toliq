@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sertifikatlar - IBN SINO EDUCATION</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../public/img/Screenshot 2026-02-06 232908.png">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Vue.js CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .filter-section {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-select {
+            background: rgba(7, 26, 47, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            flex: 1 1 200px;
+            min-width: 140px;
+        }
+
+        @media (max-width: 576px) {
+            .filter-section {
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .filter-select {
+                flex: 1 1 100%;
+                font-size: 0.85rem;
+            }
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .btn-page {
+            background: var(--grad-button);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-page:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .dtm-badge {
+            background: #ff9800;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        /* Previous styles... */
+        .album-badge {
+            background: var(--color-accent);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            pointer-events: none;
+            transform: translateY(-50%);
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--color-accent);
+        }
+
+        .image-counter {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <!-- Navbar -->
+        <nav class="navbar" :class="{ 'scrolled': isScrolled }">
+            <div class="container navbar-content">
+                <a href="index.html" class="logo-link">
+                    <img src="../public/img/Screenshot 2026-02-06 232908.png" alt="IBN SINO EDUCATION" class="logo-img">
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="desktop-menu">
+                    <a v-for="item in menuItems" :key="item.text" :href="item.link" class="nav-link">{{ item.text }}</a>
+                    <a href="certificates.html" class="nav-link active"
+                        style="color: var(--color-accent);">Sertifikatlar</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="mobile-btn" @click="toggleMenu" aria-label="Menu">
+                    <div class="hamburger" :class="{ 'active': isMenuOpen }">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Mobile Overlay -->
+        <div class="mobile-menu" :class="{ 'active': isMenuOpen }">
+            <a v-for="item in menuItems" :key="item.text" :href="item.link" class="mobile-nav-item" @click="toggleMenu">
+                {{ item.text }}
+            </a>
+            <a href="certificates.html" class="mobile-nav-item" @click="toggleMenu">Sertifikatlar</a>
+            <a :href="contactData.telegram" class="btn btn-primary" target="_blank">Telegramda bog'lanish</a>
+        </div>
+
+        <main id="certificates-page" style="padding-top: 120px;">
+            <section class="section-padding">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">Milliy Sertifikat Natijalari</h1>
+                        <p class="section-desc">Bizning muvaffaqiyatli o'quvchilarimiz va ularning erishgan natijalari.
+                        </p>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filter-section reveal fade-in">
+                        <select v-model="filters.year" class="filter-select" @change="changeFilter">
+                            <option value="">Barcha yillar</option>
+                            <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
+                        </select>
+                        <select v-model="filters.subject" class="filter-select" @change="changeFilter">
+                            <option value="">Barcha fanlar</option>
+                            <option value="Kimyo">Kimyo</option>
+                            <option value="Biologiya">Biologiya</option>
+                            <option value="Ona tili">Ona tili</option>
+                            <option value="Rus tili">Rus tili</option>
+                            <option value="Tarix">Tarix</option>
+                            <option value="Matematika">Matematika</option>
+                        </select>
+                        <select v-model="filters.level" class="filter-select" @change="changeFilter">
+                            <option value="">Barcha darajalar</option>
+                            <option value="A+">A+</option>
+                            <option value="A">A</option>
+                            <option value="B+">B+</option>
+                            <option value="B">B</option>
+                            <option value="C+">C+</option>
+                            <option value="C">C</option>
+                            <option value="DTM">DTM Ball</option>
+                        </select>
+                    </div>
+
+                    <!-- Grid -->
+                    <div v-if="loading" style="text-align: center; padding: 4rem;">
+                        <p style="font-size: 1.5rem; opacity: 0.7;">Yuklanmoqda...</p>
+                    </div>
+
+                    <div v-else-if="certificates.length === 0" style="text-align: center; padding: 4rem;">
+                        <p style="font-size: 1.5rem; opacity: 0.7;">Hozircha natijalar mavjud emas.</p>
+                    </div>
+
+                    <div v-else class="certificate-grid">
+                        <div v-for="(cert, index) in certificates" :key="cert.id"
+                            class="certificate-card reveal reveal-scale" @click="openModal(cert)">
+                            <div class="cert-img-container">
+                                <img :src="cert.images[0]" alt="Certificate" class="certificate-image" loading="lazy">
+                                <div class="cert-overlay">
+                                    <i data-lucide="maximize-2"></i>
+                                    <span v-if="cert.images.length > 1">Albomni ko'rish ({{ cert.images.length }}
+                                        ta)</span>
+                                    <span v-else>Kattalashtirish</span>
+                                </div>
+                            </div>
+                            <div class="cert-info">
+                                <div class="cert-header">
+                                    <span v-if="cert.maxLevel"
+                                        :class="cert.maxLevel === 'DTM' ? 'dtm-badge' : 'cert-level'">
+                                        {{ cert.maxLevel }}
+                                    </span>
+                                    <div v-if="cert.images.length > 1" class="album-badge">
+                                        <i data-lucide="layers" style="width: 12px; height: 12px;"></i> ALBOM
+                                    </div>
+                                    <span class="cert-subject">{{ cert.subject }}</span>
+                                </div>
+                                <h3 class="student-name">
+                                    {{ cert.student_name }}
+                                    <span v-if="cert.student_grade"
+                                        style="font-size: 0.8rem; color: var(--color-accent); margin-left: 5px;">
+                                        ({{ cert.student_grade }}-sinf)
+                                    </span>
+                                </h3>
+                                <div class="cert-footer">
+                                    <span class="cert-score">Natija: {{ cert.details[0].dtm_score || cert.maxLevel
+                                        }}</span>
+                                    <span class="cert-date">{{ cert.year }} yil</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div v-if="totalPages > 1" class="pagination-container">
+                        <button class="btn-page" :disabled="currentPage === 1" @click="prevPage">
+                            Oldingi
+                        </button>
+                        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+                        <button class="btn-page" :disabled="currentPage === totalPages" @click="nextPage">
+                            Keyingi
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container footer-content">
+                <div class="footer-logo">
+                    <img src="../public/img/Screenshot 2026-02-06 232908.png" alt="IBN SINO EDUCATION" class="logo-img">
+                </div>
+                <div style="display: flex; gap: 1.5rem;">
+                    <a :href="contactData.telegram" style="color: white;"><i data-lucide="send"></i></a>
+                    <a href="#" style="color: white;"><i data-lucide="instagram"></i></a>
+                </div>
+                <div class="footer-bottom">
+                    &copy; 2026 IBN SINO EDUCATION. Barcha huquqlar himoyalangan.
+                </div>
+            </div>
+        </footer>
+
+        <!-- Image Modal -->
+        <div class="modal" :class="{ 'active': selectedCert }" @click.self="closeModal">
+            <div class="modal-content">
+                <button class="modal-close" @click="closeModal">&times;</button>
+
+                <img v-if="selectedCert" :src="selectedCert.images[currentImageIndex]" alt="Full Certificate"
+                    class="full-cert-img">
+
+                <div v-if="selectedCert && selectedCert.images.length > 1" class="modal-nav">
+                    <button class="nav-btn" @click="prevImage" aria-label="Oldingi">&lt;</button>
+                    <button class="nav-btn" @click="nextImage" aria-label="Keyingi">&gt;</button>
+                </div>
+
+                <div v-if="selectedCert" class="image-counter">
+                    {{ currentImageIndex + 1 }} / {{ selectedCert.images.length }}
+                </div>
+
+                <div v-if="selectedCert" class="modal-info">
+                    <h3>{{ selectedCert.student_name }}</h3>
+                    <p>{{ selectedCert.details[currentImageIndex].subject }} | {{
+                        selectedCert.details[currentImageIndex].certificate_level }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration for Supabase will go in script.js or a separate config file -->
+    <script src="script.js"></script>
+</body>
+
+</html>

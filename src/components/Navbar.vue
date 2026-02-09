@@ -1,0 +1,48 @@
+<script setup>
+import { useTheme } from '../composables/useTheme'
+import { ref, onMounted } from 'vue'
+import { Sun, Moon } from 'lucide-vue-next'
+
+const { isDarkMode, toggleTheme } = useTheme()
+const isScrolled = ref(false)
+const isMenuOpen = ref(false)
+</script>
+
+<template>
+  <nav class="navbar" :class="{ scrolled: isScrolled }">
+    <div class="container navbar-content">
+      <a href="/" class="logo-link">
+        <div class="logo-text">IBN <span>SINO</span></div>
+      </a>
+
+      <div class="desktop-menu">
+        <a href="#hero" class="nav-link">Bosh sahifa</a>
+        <a href="#certificates" class="nav-link">Natijalar</a>
+        <a href="#contact" class="nav-link">Aloqa</a>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <button class="theme-toggle" @click="toggleTheme" aria-label="Rejim">
+           <Sun v-if="isDarkMode" :size="20" />
+           <Moon v-else :size="20" />
+        </button>
+        
+        <button class="mobile-btn" @click="isMenuOpen = !isMenuOpen">
+          <div class="hamburger" :class="{ active: isMenuOpen }">
+            <span></span><span></span><span></span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" :class="{ active: isMenuOpen }">
+     <a href="#hero" class="mobile-nav-item" @click="isMenuOpen = false">Bosh sahifa</a>
+     <a href="#certificates" class="mobile-nav-item" @click="isMenuOpen = false">Natijalar</a>
+     <a href="#contact" class="mobile-nav-item" @click="isMenuOpen = false">Aloqa</a>
+  </div>
+</template>
+
+<style scoped>
+/* Scopes specific navbar styles if needed, else they come from assets/style.css */
+</style>
