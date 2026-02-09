@@ -30,14 +30,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <section id="results" class="section-padding bg-light">
+  <section id="results" class="section-padding bg-light reveal">
     <div class="container">
-      <div class="section-header">
+      <div class="section-header reveal reveal-up">
         <h2 class="section-title">Bizning Natijalarimiz</h2>
         <p class="section-desc">Akademiyamizning muvaffaqiyati o'quvchilarimizning natijalarida namoyon bo'ladi.</p>
       </div>
       <div class="results-grid">
-        <div v-for="stat in animatedStats" :key="stat.label" class="stat-item">
+        <div v-for="(stat, index) in animatedStats" :key="stat.label" 
+           class="stat-item reveal reveal-up"
+           :style="{ marginTop: index > 0 ? '0' : '0' }">
           <span class="stat-val">{{ stat.currentValue }}{{ stat.suffix }}</span>
           <span class="stat-label">{{ stat.label }}</span>
         </div>
@@ -45,3 +47,4 @@ onMounted(() => {
     </div>
   </section>
 </template>
+```

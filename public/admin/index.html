@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - IBN SINO EDUCATION</title>
+    <link rel="icon" type="image/png" href="../public/img/Screenshot 2026-02-06 232908.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            background: #071A2F;
+            color: white;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: rgba(11, 60, 93, 0.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 3rem;
+        }
+
+        .nav-item {
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--color-accent);
+            color: white;
+            font-weight: 700;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+            padding-right: 2.5rem;
+        }
+
+        .form-control option {
+            background: #0B3C5D;
+            color: white;
+            padding: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-accent);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Multi Slot Styling */
+        .cert-slot {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.5rem;
+        }
+
+        .remove-btn {
+            background: rgba(244, 67, 54, 0.15);
+            color: #ff8a80;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .preview-box {
+            width: 100%;
+            height: 160px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .preview-box:hover {
+            border-color: var(--color-accent);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .search-bar {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .data-table td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .page-btn.active {
+            background: var(--color-accent);
+        }
+
+        .btn-add-more {
+            background: rgba(0, 191, 166, 0.1);
+            color: var(--color-accent);
+            border: 1px dashed var(--color-accent);
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 991px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 1rem;
+                display: flex;
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .sidebar>div:first-child {
+                display: none;
+            }
+
+            .nav-item {
+                margin-bottom: 0;
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem 1rem;
+            }
+
+            .btn-logout {
+                margin-top: 0;
+                margin-left: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .admin-card {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .data-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .slot-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="admin-app" v-cloak>
+        <!-- Login Form -->
+        <div v-if="!session" class="container" style="max-width: 450px; margin-top: 10vh;">
+            <div class="admin-card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h2>Admin Portal</h2>
+                    <p>Kirish uchun login va parolni yozing</p>
+                </div>
+                <form @submit.prevent="handleLogin">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" v-model="email" class="form-control" placeholder="admin@example.com"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label>Parol</label>
+                        <input type="password" v-model="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full" :disabled="loading">
+                        {{ loading ? 'Kirilmoqda...' : 'Kirish' }}
+                    </button>
+                    <p v-if="error" style="color: #ff8a80; margin-top: 1rem;">{{ error }}</p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div v-else class="admin-layout">
+            <aside class="sidebar">
+                <div style="padding-bottom: 2rem; color: var(--color-accent); font-weight: 900;">IBN SINO</div>
+                <div class="nav-item" :class="{ active: activeTab === 'add' }" @click="activeTab = 'add'">Yangi Qo'shish
+                </div>
+                <div class="nav-item" :class="{ active: activeTab === 'manage' }" @click="activeTab = 'manage'">
+                    Sertifikatlar</div>
+                <div class="nav-item" :class="{ active: activeTab === 'gallery' }" @click="activeTab = 'gallery'">
+                    Galereya</div>
+                <div class="nav-item" :class="{ active: activeTab === 'logs' }" @click="activeTab = 'logs'">
+                    Harakatlar</div>
+                <div @click="handleLogout" style="margin-top: auto; color: #ff8a80; cursor: pointer; padding: 1rem;">
+                    Chiqish</div>
+            </aside>
+
+            <main class="main-content">
+                <!-- Add Multi-Certificate -->
+                <div v-if="activeTab === 'add'">
+                    <h1 style="margin-bottom: 2rem;">Yangi Sertifikatlar Qo'shish</h1>
+
+                    <div class="admin-card">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--color-accent);">1. O'quvchi ma'lumotlari</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Ism-Familiya</label>
+                                <input type="text" v-model="studentInfo.name" class="form-control"
+                                    placeholder="Masalan: Abdulloh" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sinf / Status</label>
+                                <select v-model="studentInfo.grade" class="form-control">
+                                    <option :value="null">Tanlanmagan</option>
+                                    <option v-for="n in 5" :key="n" :value="n + 6">{{ n + 6 }}-sinf</option>
+                                    <option value="11">11-sinf</option>
+                                    <option value="Bitiruvchi">Bitiruvchi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="max-width: 200px;">
+                            <label>Yil</label>
+                            <input type="number" v-model="studentInfo.year" class="form-control">
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 1.5rem; color: var(--color-accent);">2. Sertifikatlar ({{
+                        certificateSlots.length }} ta)</h3>
+
+                    <div v-for="(slot, index) in certificateSlots" :key="index" class="cert-slot">
+                        <div class="slot-header">
+                            <strong>{{ index + 1 }}-sertifikat</strong>
+                            <button v-if="certificateSlots.length > 1" @click="removeSlot(index)"
+                                class="remove-btn">O'chirish</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Fan</label>
+                                <select v-model="slot.subject" class="form-control">
+                                    <option
+                                        v-for="s in ['Kimyo', 'Biologiya', 'Ona tili', 'Rus tili', 'Tarix', 'Matematika']"
+                                        :value="s">{{ s }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Daraja</label>
+                                <select v-model="slot.level" class="form-control">
+                                    <option v-for="l in ['A+', 'A', 'B+', 'B', 'C+', 'C', 'DTM']" :value="l">{{ l }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Ball (Ixtiyoriy)</label>
+                                <input type="number" v-model="slot.score" class="form-control" placeholder="189">
+                            </div>
+                            <div class="form-group">
+                                <label>Rasm (Bosing)</label>
+                                <input type="file" @change="onFileChange($event, index)" style="display: none"
+                                    :id="'file-'+index" accept="image/*">
+                                <div class="preview-box" @click="triggerFileInput(index)">
+                                    <img v-if="slot.preview" :src="slot.preview">
+                                    <span v-else>Rasm tanlang</span>
+                                </div>
+                                <div v-if="slot.progress > 0"
+                                    style="margin-top: 10px; height: 4px; background: #eee; border-radius: 2px;">
+                                    <div
+                                        :style="{ width: slot.progress + '%', background: 'var(--color-accent)', height: '100%', transition: '0.3s' }">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button v-if="certificateSlots.length < 5" @click="addSlot" class="btn-add-more">
+                        + Yana sertifikat qo'shish (Maksimal 5 ta)
+                    </button>
+
+                    <div style="margin-top: 3rem; display: flex; align-items: center; gap: 2rem;">
+                        <button @click="handleUploadAll" class="btn btn-primary" :disabled="loading"
+                            style="padding: 1rem 4rem;">
+                            {{ loading ? 'Yuklanmoqda...' : 'Hammasini Saqlash' }}
+                        </button>
+                        <span v-if="success" style="color: var(--color-accent); font-weight: 700;">{{ success }}</span>
+                        <span v-if="error" style="color: #ff8a80;">{{ error }}</span>
+                    </div>
+                </div>
+
+                <!-- Manage -->
+                <div v-if="activeTab === 'manage'">
+                    <h1 style="margin-bottom: 2rem;">Sertifikatlar Ro'yxati</h1>
+                    <div class="search-bar">
+                        <input type="text" v-model="adminSearch" placeholder="Qidirish...">
+                    </div>
+                    <div class="admin-card" style="padding: 0; overflow: hidden;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rasm</th>
+                                    <th>O'quvchi</th>
+                                    <th>Fan</th>
+                                    <th>Daraja</th>
+                                    <th>Yil</th>
+                                    <th>Amal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="cert in certList" :key="cert.id">
+                                    <td><img :src="cert.image_url"
+                                            style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                    </td>
+                                    <td>{{ cert.student_name }} <small
+                                            v-if="cert.student_grade">({{cert.student_grade}})</small></td>
+                                    <td>{{ cert.subject }}</td>
+                                    <td>{{ cert.certificate_level }}</td>
+                                    <td>{{ cert.year }}</td>
+                                    <td><button @click="handleDelete(cert)"
+                                            style="color: #ff8a80; border: none; background: none; cursor: pointer;">O'chirish</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-if="loadingList" style="padding: 2rem; text-align: center;">Yuklanmoqda...</div>
+                    </div>
+                    <!-- Pagination -->
+                    <div v-if="adminTotalPages > 1" class="pagination">
+                        <button class="page-btn" v-for="p in adminTotalPages" @click="changeAdminPage(p)"
+                            :class="{ active: p === adminPage }">{{ p }}</button>
+                    </div>
+                </div>
+
+                <!-- Gallery -->
+                <div v-if="activeTab === 'gallery'">
+                    <h1 style="margin-bottom: 2rem;">Galereya</h1>
+                    <div class="admin-card">
+                        <input type="file" ref="galleryFileInput" @change="previewGalleryImage" style="display: none"
+                            accept="image/*">
+                        <div class="preview-box" @click="$refs.galleryFileInput.click()"
+                            style="height: 120px; margin-bottom: 1rem;">
+                            <img v-if="galleryPreview" :src="galleryPreview">
+                            <span v-else>Yangi foto yuklash uchun bosing</span>
+                        </div>
+                        <button @click="handleGalleryUpload" class="btn btn-primary"
+                            :disabled="loadingGallery">Yuklash</button>
+                    </div>
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
+                        <div v-for="item in galleryList" :key="item.id"
+                            style="position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden;">
+                            <img :src="item.image_url" style="width: 100%; height: 100%; object-fit: cover;">
+                            <button @click="handleDeleteGallery(item)"
+                                style="position: absolute; top: 10px; right: 10px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">&times;</button>
+                        </div>
+                    </div>
+                    <!-- Audit Logs -->
+                    <div v-if="activeTab === 'logs'">
+                        <h1 style="margin-bottom: 2rem;">Harakatlar Tarixi (Audit Logs)</h1>
+                        <div class="admin-card">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Admin ID</th>
+                                        <th>Amal</th>
+                                        <th>Jadval</th>
+                                        <th>Sertifikat ID</th>
+                                        <th>Sana</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="log in auditList" :key="log.id">
+                                        <td><small style="color: grey;">{{ log.admin_id?.substring(0,8) }}...</small>
+                                        </td>
+                                        <td>
+                                            <span :style="{ 
+                                            padding: '4px 8px', 
+                                            borderRadius: '4px', 
+                                            fontSize: '0.8rem',
+                                            backgroundColor: log.action_type === 'INSERT' ? 'rgba(0,191,166,0.2)' : 'rgba(244,67,54,0.2)',
+                                            color: log.action_type === 'INSERT' ? '#00BFA6' : '#ff8a80'
+                                        }">{{ log.action_type }}</span>
+                                        </td>
+                                        <td>{{ log.table_name }}</td>
+                                        <td><small style="color: grey;">{{ log.record_id?.substring(0,8) }}...</small>
+                                        </td>
+                                        <td>{{ new Date(log.created_at).toLocaleString() }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-if="loadingLogs" style="padding: 2rem; text-align: center;">Yuklanmoqda...</div>
+                            <div v-if="!loadingLogs && auditList.length === 0"
+                                style="padding: 2rem; text-align: center; color: grey;">Harakatlar topilmadi</div>
+                        </div>
+                    </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

@@ -34,6 +34,7 @@ onUnmounted(() => {
         <a href="#certificates" class="nav-link">Sertifikatlar</a>
         <a href="#about" class="nav-link">Biz haqimizda</a>
         <a href="#contact" class="nav-link">Aloqa</a>
+        <a href="/admin/" class="nav-link" target="_blank">Admin</a>
       </div>
 
       <div style="display: flex; align-items: center; gap: 1rem;">
@@ -58,6 +59,7 @@ onUnmounted(() => {
      <a href="#certificates" class="mobile-nav-item" @click="isMenuOpen = false">Sertifikatlar</a>
      <a href="#about" class="mobile-nav-item" @click="isMenuOpen = false">Biz haqimizda</a>
      <a href="#contact" class="mobile-nav-item" @click="isMenuOpen = false">Aloqa</a>
+     <a href="/admin/" class="mobile-nav-item" @click="isMenuOpen = false">Admin</a>
   </div>
 </template>
 
