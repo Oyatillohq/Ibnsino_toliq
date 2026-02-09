@@ -29,7 +29,10 @@ onUnmounted(() => {
 
       <div class="desktop-menu">
         <a href="#hero" class="nav-link">Bosh sahifa</a>
-        <a href="#certificates" class="nav-link">Natijalar</a>
+        <a href="#results" class="nav-link">Natijalar</a>
+        <a href="#subjects" class="nav-link">Fanlar</a>
+        <a href="#certificates" class="nav-link">Sertifikatlar</a>
+        <a href="#about" class="nav-link">Biz haqimizda</a>
         <a href="#contact" class="nav-link">Aloqa</a>
       </div>
 
@@ -50,7 +53,10 @@ onUnmounted(() => {
 
   <div class="mobile-menu" :class="{ active: isMenuOpen }">
      <a href="#hero" class="mobile-nav-item" @click="isMenuOpen = false">Bosh sahifa</a>
-     <a href="#certificates" class="mobile-nav-item" @click="isMenuOpen = false">Natijalar</a>
+     <a href="#results" class="mobile-nav-item" @click="isMenuOpen = false">Natijalar</a>
+     <a href="#subjects" class="mobile-nav-item" @click="isMenuOpen = false">Fanlar</a>
+     <a href="#certificates" class="mobile-nav-item" @click="isMenuOpen = false">Sertifikatlar</a>
+     <a href="#about" class="mobile-nav-item" @click="isMenuOpen = false">Biz haqimizda</a>
      <a href="#contact" class="mobile-nav-item" @click="isMenuOpen = false">Aloqa</a>
   </div>
 </template>
