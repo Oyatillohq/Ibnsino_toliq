@@ -75,6 +75,10 @@ JOIN certificates c ON s.id = c.student_id
 JOIN subjects sub ON c.subject_id = sub.id
 GROUP BY s.id, s.name, s.grade, c.year;
 
+-- Grant access to the view
+GRANT SELECT ON student_certificates_view TO anon;
+GRANT SELECT ON student_certificates_view TO authenticated;
+
 -- 5. STORAGE BUCKETS
 -- (Note: Bucket creation usually happens via Dashboard or Admin API, 
 -- but we define policies here)

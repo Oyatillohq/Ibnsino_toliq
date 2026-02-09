@@ -19,7 +19,7 @@ export const certificateService = {
             return { data: data || [], count: count || 0 }
         } catch (err) {
             console.error("Certificate load error:", err)
-            return { data: [], count: 0 }
+            return { data: [], count: 0, error: err.message }
         }
     },
 

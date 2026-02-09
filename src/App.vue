@@ -1,47 +1,63 @@
 <script setup>
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
 const initAnimations = () => {
-    console.log("Initializing animations...");
-    const observerOptions = {
-        threshold: 0.15,
-        rootMargin: '0px 0px -50px 0px'
-    }
+  // 1. First, find all revealable elements
+  const elements = document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale')
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal-visible')
-            }
-        })
-    }, observerOptions)
+  if (elements.length === 0) {
+    // If no elements found yet, try again in a bit (DOM might not be ready)
+    setTimeout(initAnimations, 200)
+    return
+  }
 
-    const elements = document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale')
-    console.log(`Found ${elements.length} elements to animate.`);
-    
-    elements.forEach(el => {
-        observer.observe(el)
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -20px 0px'
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('reveal-visible')
+      }
     })
+  }, observerOptions)
 
-    // Safety fallback: reveal all elements after 3 seconds if JS observer fails or is delayed
-    setTimeout(() => {
-        elements.forEach(el => el.classList.add('reveal-visible'))
-    }, 3000)
+  elements.forEach(el => {
+    // If element is already in or above viewport, reveal it immediately
+    const rect = el.getBoundingClientRect()
+    if (rect.top < window.innerHeight) {
+      el.classList.add('reveal-visible')
+    }
+    observer.observe(el)
+  })
+
+  // Safety fallback: reveal all elements after 1.5s anyway to ensure user sees content
+  setTimeout(() => {
+    document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale')
+      .forEach(el => el.classList.add('reveal-visible'))
+  }, 1500)
 }
 
 onMounted(() => {
-    console.log("App mounted on route:", route.path);
-    setTimeout(initAnimations, 500)
+  nextTick(() => {
+    setTimeout(initAnimations, 100)
+  })
 })
 
-watch(() => route.path, (newPath) => {
-    console.log("Route changed to:", newPath);
-    setTimeout(initAnimations, 300)
+watch(() => route.path, () => {
+  // Wait for route transition to finish
+  setTimeout(() => {
+    nextTick(() => {
+      initAnimations()
+    })
+  }, 500)
 })
 </script>
 
