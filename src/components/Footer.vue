@@ -3,10 +3,11 @@
     <div class="container footer-content reveal reveal-left">
       <div class="footer-logo">IBN <span>SINO</span> EDUCATION</div>
       <div class="footer-links">
-          <a href="#hero">Bosh sahifa</a>
-          <a href="#results">Natijalar</a>
-          <a href="#subjects">Fanlar</a>
-          <a href="#about">Biz haqimizda</a>
+          <router-link to="/">Bosh sahifa</router-link>
+          <router-link to="/#results">Natijalar</router-link>
+          <router-link to="/#subjects">Fanlar</router-link>
+          <router-link to="/certificates">Sertifikatlar</router-link>
+          <router-link to="/#about">Biz haqimizda</router-link>
       </div>
       <p class="copyright">&copy; {{ new Date().getFullYear() }} Ibn Sino Education. Barcha huquqlar himoyalangan.</p>
     </div>

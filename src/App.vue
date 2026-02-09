@@ -1,33 +1,37 @@
 <script setup>
 import Navbar from './components/Navbar.vue'
-import Hero from './components/Hero.vue'
-import Stats from './components/Stats.vue'
-import Subjects from './components/Subjects.vue'
-import CertificateGrid from './components/CertificateGrid.vue'
-import About from './components/About.vue'
-import Gallery from './components/Gallery.vue'
-import Features from './components/Features.vue'
-import Contact from './components/Contact.vue'
 import Footer from './components/Footer.vue'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const initAnimations = () => {
+    const observerOptions = {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('reveal-visible')
+            }
+        })
+    }, observerOptions)
+
+    document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+        observer.observe(el)
+    })
+}
 
 onMounted(() => {
-  const observerOptions = {
-    threshold: 0.15,
-    rootMargin: '0px 0px -50px 0px'
-  }
+    initAnimations()
+})
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('reveal-visible')
-      }
-    })
-  }, observerOptions)
-
-  document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
-    observer.observe(el)
-  })
+// Re-init animations on route change
+watch(() => route.path, () => {
+    setTimeout(initAnimations, 100)
 })
 </script>
 
@@ -35,14 +39,11 @@ onMounted(() => {
   <div class="app-wrapper">
     <Navbar />
     <main>
-      <Hero />
-      <Stats />
-      <Subjects />
-      <CertificateGrid />
-      <About />
-      <Gallery />
-      <Features />
-      <Contact />
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </main>
     <Footer />
   </div>
@@ -59,6 +60,15 @@ onMounted(() => {
 
 main {
   flex: 1;
-  padding-bottom: 5rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

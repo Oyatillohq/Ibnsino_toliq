@@ -25,12 +25,12 @@ onUnmounted(() => {
       </a>
 
       <div class="desktop-menu">
-        <a href="#hero" class="nav-link">Bosh sahifa</a>
-        <a href="#results" class="nav-link">Natijalar</a>
-        <a href="#subjects" class="nav-link">Fanlar</a>
-        <a href="#certificates" class="nav-link">Sertifikatlar</a>
-        <a href="#about" class="nav-link">Biz haqimizda</a>
-        <a href="#contact" class="nav-link">Aloqa</a>
+        <router-link to="/" class="nav-link">Bosh sahifa</router-link>
+        <router-link to="/#results" class="nav-link">Natijalar</router-link>
+        <router-link to="/#subjects" class="nav-link">Fanlar</router-link>
+        <router-link to="/certificates" class="nav-link">Sertifikatlar</router-link>
+        <router-link to="/#about" class="nav-link">Biz haqimizda</router-link>
+        <router-link to="/#contact" class="nav-link">Aloqa</router-link>
         <a href="/admin/" class="nav-link" target="_blank">Admin</a>
       </div>
 
@@ -45,12 +45,12 @@ onUnmounted(() => {
   </nav>
 
   <div class="mobile-menu" :class="{ active: isMenuOpen }">
-     <a href="#hero" class="mobile-nav-item" @click="isMenuOpen = false">Bosh sahifa</a>
-     <a href="#results" class="mobile-nav-item" @click="isMenuOpen = false">Natijalar</a>
-     <a href="#subjects" class="mobile-nav-item" @click="isMenuOpen = false">Fanlar</a>
-     <a href="#certificates" class="mobile-nav-item" @click="isMenuOpen = false">Sertifikatlar</a>
-     <a href="#about" class="mobile-nav-item" @click="isMenuOpen = false">Biz haqimizda</a>
-     <a href="#contact" class="mobile-nav-item" @click="isMenuOpen = false">Aloqa</a>
+     <router-link to="/" class="mobile-nav-item" @click="isMenuOpen = false">Bosh sahifa</router-link>
+     <router-link to="/#results" class="mobile-nav-item" @click="isMenuOpen = false">Natijalar</router-link>
+     <router-link to="/#subjects" class="mobile-nav-item" @click="isMenuOpen = false">Fanlar</router-link>
+     <router-link to="/certificates" class="mobile-nav-item" @click="isMenuOpen = false">Sertifikatlar</router-link>
+     <router-link to="/#about" class="mobile-nav-item" @click="isMenuOpen = false">Biz haqimizda</router-link>
+     <router-link to="/#contact" class="mobile-nav-item" @click="isMenuOpen = false">Aloqa</router-link>
      <a href="/admin/" class="mobile-nav-item" @click="isMenuOpen = false">Admin</a>
   </div>
 </template>
