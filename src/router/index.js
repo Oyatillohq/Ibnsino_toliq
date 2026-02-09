@@ -14,6 +14,10 @@ const router = createRouter({
             path: '/certificates',
             name: 'certificates',
             component: CertificatesView
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            redirect: '/'
         }
     ],
     scrollBehavior(to, from, savedPosition) {

@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const initAnimations = () => {
+    console.log("Initializing animations...");
     const observerOptions = {
         threshold: 0.15,
         rootMargin: '0px 0px -50px 0px'
@@ -20,18 +21,27 @@ const initAnimations = () => {
         })
     }, observerOptions)
 
-    document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+    const elements = document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale')
+    console.log(`Found ${elements.length} elements to animate.`);
+    
+    elements.forEach(el => {
         observer.observe(el)
     })
+
+    // Safety fallback: reveal all elements after 3 seconds if JS observer fails or is delayed
+    setTimeout(() => {
+        elements.forEach(el => el.classList.add('reveal-visible'))
+    }, 3000)
 }
 
 onMounted(() => {
+    console.log("App mounted on route:", route.path);
     setTimeout(initAnimations, 500)
 })
 
-// Re-init animations on route change
-watch(() => route.path, () => {
-    setTimeout(initAnimations, 100)
+watch(() => route.path, (newPath) => {
+    console.log("Route changed to:", newPath);
+    setTimeout(initAnimations, 300)
 })
 </script>
 
