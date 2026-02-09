@@ -55,7 +55,7 @@ const contactData = {
   display: grid;
   grid-template-columns: 1fr;
   gap: 3rem;
-  align-items: start;
+  align-items: stretch; /* Stretch both to equal height */
 }
 
 @media (min-width: 1024px) {
@@ -70,6 +70,9 @@ const contactData = {
   border-radius: 32px;
   border: 1px solid var(--color-border);
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically if card is taller */
 }
 
 .contact-info-group {
@@ -130,7 +133,8 @@ const contactData = {
 
 .map-container {
   width: 100%;
-  height: 500px;
+  height: 100%; /* Take full height of the grid cell */
+  min-height: 450px; /* Minimum height for better mobile view */
   border-radius: 32px;
   overflow: hidden;
   border: 1px solid var(--color-border);
