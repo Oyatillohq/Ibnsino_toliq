@@ -37,13 +37,6 @@ const contactData = {
             </a>
           </div>
 
-          <div class="contact-info-group">
-            <h3 class="contact-sub-title">Manzil</h3>
-            <div class="phone-item address-item">
-               <div class="icon-circle"><MapPin :size="20" /></div>
-               <span>{{ contactData.address }}</span>
-            </div>
-          </div>
         </div>
 
         <div class="map-container reveal reveal-left">
