@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue'
 import { Eye } from 'lucide-vue-next'
 
 const gallery = [
@@ -15,12 +14,13 @@ const gallery = [
 <template>
   <section id="gallery" class="section-padding bg-white">
     <div class="container">
-      <div class="section-header">
+      <div class="section-header reveal reveal-up">
         <h2 class="section-title">Bizning Muhit</h2>
         <p class="section-desc">O'quvchilarimiz uchun yaratilgan zamonaviy va qulay sharoitlar bilan tanishing.</p>
       </div>
       <div class="gallery-grid">
-        <div v-for="(img, index) in gallery" :key="index" class="gallery-item">
+        <div v-for="(img, index) in gallery" :key="index" class="gallery-item reveal reveal-scale"
+             :style="{ transitionDelay: (index % 3 * 100) + 'ms' }">
           <img :src="img" alt="Academy Atmosphere" class="gallery-image" loading="lazy">
           <div class="gallery-overlay">
             <Eye :size="32" color="white" />

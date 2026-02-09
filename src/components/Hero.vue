@@ -51,7 +51,7 @@ const contactData = {
     </div>
     
     <div class="container">
-      <div class="hero-content reveal-visible">
+      <div class="hero-content reveal reveal-up">
         <span class="hero-badge">Professional Akademiya</span>
         <h1 class="hero-title">IBN SINO EDUCATION</h1>
         <p class="hero-subtitle">

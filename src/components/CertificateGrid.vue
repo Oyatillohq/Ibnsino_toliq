@@ -31,7 +31,7 @@ onMounted(loadData)
 <template>
   <section id="certificates" class="section-padding">
     <div class="container">
-      <div class="section-header">
+      <div class="section-header reveal reveal-up">
         <h2 class="section-title">O'quvchilar Natijalari</h2>
         <div class="filters">
            <select v-model="yearFilter" @change="loadData" class="filter-select">
@@ -44,7 +44,7 @@ onMounted(loadData)
 
       <div v-if="loading" class="loading">Yuklanmoqda...</div>
       
-      <div v-else-if="groups.length > 0" class="certificate-grid">
+      <div v-else-if="groups.length > 0" class="certificate-grid reveal reveal-scale">
         <CertificateCard 
           v-for="group in groups" 
           :key="group.student_id" 

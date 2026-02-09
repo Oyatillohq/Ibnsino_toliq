@@ -1,9 +1,6 @@
 <script setup>
-import { useTheme } from '../composables/useTheme'
 import { ref, onMounted, onUnmounted } from 'vue'
-import { Sun, Moon } from 'lucide-vue-next'
 
-const { isDarkMode, toggleTheme } = useTheme()
 const isScrolled = ref(false)
 const isMenuOpen = ref(false)
 
@@ -38,11 +35,6 @@ onUnmounted(() => {
       </div>
 
       <div style="display: flex; align-items: center; gap: 1rem;">
-        <button class="theme-toggle" @click="toggleTheme" aria-label="Rejim">
-           <Sun v-if="isDarkMode" :size="20" />
-           <Moon v-else :size="20" />
-        </button>
-        
         <button class="mobile-btn" @click="isMenuOpen = !isMenuOpen">
           <div class="hamburger" :class="{ active: isMenuOpen }">
             <span></span><span></span><span></span>

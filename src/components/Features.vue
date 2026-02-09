@@ -13,11 +13,13 @@ const features = [
 <template>
   <section id="features" class="section-padding bg-white">
     <div class="container">
-      <div class="section-header">
+      <div class="section-header reveal reveal-up">
         <h2 class="section-title">Akademiya Afzalliklari</h2>
       </div>
       <div class="features-grid">
-        <div v-for="f in features" :key="f.title" class="feature-card">
+        <div v-for="(f, index) in features" :key="f.title" 
+             class="feature-card reveal reveal-up"
+             :style="{ transitionDelay: (index * 100) + 'ms' }">
           <div class="feature-icon-box">
             <component :is="f.icon" :size="32" />
           </div>

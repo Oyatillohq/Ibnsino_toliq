@@ -1028,13 +1028,32 @@ body {
         transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+.reveal-up {
+    transform: translateY(50px);
+}
+
+.reveal-left {
+    transform: translateX(-50px);
+}
+
+.reveal-right {
+    transform: translateX(50px);
+}
+
+.reveal-scale {
+    transform: scale(0.9);
+}
+
 .reveal-visible {
     opacity: 1 !important;
     transform: translate(0, 0) rotate(0) scale(1) !important;
 }
 
+/* Fix spacing and separation */
 main section {
-    margin-bottom: 4rem;
+    padding: 6rem 0;
+    position: relative;
+    z-index: 1;
 }
 
 /* Delay Classes */
@@ -1058,22 +1077,8 @@ main section {
     transition-delay: 0.5s;
 }
 
-.delay-600 {
-    transition-delay: 0.6s;
-}
-
-.delay-800 {
-    transition-delay: 0.8s;
-}
-
-.delay-1000 {
-    transition-delay: 1s;
-}
-
 /* Footer */
 .footer {
-    background: var(--color-dark);
-    color: var(--color-text);
     padding: 5rem 0 3rem;
 }
 

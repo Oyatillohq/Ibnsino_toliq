@@ -38,8 +38,8 @@ onMounted(() => {
       </div>
       <div class="results-grid">
         <div v-for="(stat, index) in animatedStats" :key="stat.label" 
-           class="stat-item reveal reveal-up"
-           :style="{ marginTop: index > 0 ? '0' : '0' }">
+             class="stat-item reveal reveal-up"
+             :style="{ transitionDelay: (index * 100) + 'ms' }">
           <span class="stat-val">{{ stat.currentValue }}{{ stat.suffix }}</span>
           <span class="stat-label">{{ stat.label }}</span>
         </div>
@@ -47,4 +47,3 @@ onMounted(() => {
     </div>
   </section>
 </template>
-```
