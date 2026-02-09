@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { ArrowRight } from 'lucide-vue-next'
 
 const stats = [
-  { label: 'O\'quvchilar', value: 1500, suffix: '+' },
+  { label: 'O\'quvchilar', subLabel: '7-11 sinflar va bitiruvchilar', value: 1500, suffix: '+' },
   { label: 'Oliy o\'quv yurtlariga kirganlar (har yili)', value: 500, suffix: '+' },
   { label: 'Yillik Tajriba', value: 20, suffix: '+' },
   { label: 'Muvaffaqiyat ko\'rsatkichi', value: 95, suffix: '%' }
@@ -61,6 +61,7 @@ onMounted(() => {
              :style="{ transitionDelay: (index * 150) + 'ms' }">
           <span class="stat-val">{{ stat.currentValue }}{{ stat.suffix }}</span>
           <span class="stat-label">{{ stat.label }}</span>
+          <span v-if="stat.subLabel" class="stat-sub-label">{{ stat.subLabel }}</span>
         </div>
       </div>
 
@@ -89,5 +90,14 @@ onMounted(() => {
 
 .stats-btn:hover {
   gap: 1.5rem; /* Small micro-animation on hover */
+}
+
+.stat-sub-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  margin-top: 0.5rem;
+  font-weight: 600;
+  opacity: 0.9;
 }
 </style>
