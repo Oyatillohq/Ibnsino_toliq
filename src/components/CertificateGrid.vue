@@ -9,6 +9,44 @@ const loading = ref(true)
 const page = ref(1)
 const yearFilter = ref('')
 
+const route = useRoute()
+
+const initAnimations = () => {
+  const elements = document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale')
+
+  if (elements.length === 0) {
+    setTimeout(initAnimations, 100)
+    return
+  }
+
+  const observerOptions = {
+    threshold: 0.05,
+    rootMargin: '0px 0px 50px 0px'
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('reveal-visible')
+      }
+    })
+  }, observerOptions)
+
+  elements.forEach(el => {
+    const rect = el.getBoundingClientRect()
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      el.classList.add('reveal-visible')
+    }
+    observer.observe(el)
+  })
+
+  // Fallback: Reveal everything after 1s
+  setTimeout(() => {
+    document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale')
+      .forEach(el => el.classList.add('reveal-visible'))
+  }, 1000)
+}
+
 const selectedGroup = ref(null)
 const currentCertIndex = ref(0)
 const isModalActive = ref(false)
@@ -70,6 +108,19 @@ const handleKeydown = (e) => {
 onMounted(() => {
   loadData()
   window.addEventListener('keydown', handleKeydown)
+  setTimeout(initAnimations, 300)
+})
+
+watch(() => route.path, () => {
+  // Hide current reveals to re-trigger on new page
+  document.querySelectorAll('.reveal-visible').forEach(el => el.classList.remove('reveal-visible'))
+
+  // Wait for page transition
+  setTimeout(() => {
+    nextTick(() => {
+      initAnimations()
+    })
+  }, 400)
 })
 
 import { onUnmounted } from 'vue'
@@ -94,17 +145,19 @@ onUnmounted(() => {
 
       <div v-if="loading" class="loading" role="status">Yuklanmoqda...</div>
 
-      <div v-else-if="groups.length > 0" class="certificate-grid reveal reveal-left">
-        <CertificateCard v-for="group in groups" :key="group.student_id" :group="group" @select="openModal" />
+      <div v-else-if="!groups || groups.length === 0" class="empty-state">
+        <p v-if="errorMessage" style="color: #ff8a80;">Xatolik: {{ errorMessage }}</p>
+        <div v-else>
+          <p>Hozircha natijalar mavjud emas.</p>
+          <small style="display: block; margin-top: 1rem; opacity: 0.6;">
+            (Eslatma: Agar ma'lumot yuklagan bo'lsangiz, SQL VIEW yaratilganiga va Supabase ulanishi to'g'riligiga
+            ishonch hosil qiling.)
+          </small>
+        </div>
       </div>
 
-      <div v-else class="empty-state">
-        <p v-if="errorMessage" style="color: #ff8a80;">Xatolik: {{ errorMessage }}</p>
-        <p v-else>Hozircha natijalar mavjud emas.</p>
-        <small style="display: block; margin-top: 1rem; opacity: 0.6;">
-          (Eslatma: Agar sertifikatlar yuklangan bo'lsa, xizmat ko'rsatuvchi SQL ko'rinishlarini (view) yaratishni
-          unutmang. Shuningdek, ma'lumotlar bazasida SQL migratsiyasini ishga tushirganingizga ishonch hosil qiling.)
-        </small>
+      <div v-else class="certificate-grid reveal reveal-left">
+        <CertificateCard v-for="group in groups" :key="group.student_id" :group="group" @select="openModal" />
       </div>
 
       <!-- Pagination -->

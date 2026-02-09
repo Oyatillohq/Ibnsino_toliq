@@ -7,18 +7,16 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const initAnimations = () => {
-  // 1. First, find all revealable elements
   const elements = document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale')
 
   if (elements.length === 0) {
-    // If no elements found yet, try again in a bit (DOM might not be ready)
-    setTimeout(initAnimations, 200)
+    setTimeout(initAnimations, 100)
     return
   }
 
   const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -20px 0px'
+    threshold: 0.05,
+    rootMargin: '0px 0px 50px 0px'
   }
 
   const observer = new IntersectionObserver((entries) => {
@@ -30,34 +28,33 @@ const initAnimations = () => {
   }, observerOptions)
 
   elements.forEach(el => {
-    // If element is already in or above viewport, reveal it immediately
     const rect = el.getBoundingClientRect()
-    if (rect.top < window.innerHeight) {
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
       el.classList.add('reveal-visible')
     }
     observer.observe(el)
   })
 
-  // Safety fallback: reveal all elements after 1.5s anyway to ensure user sees content
+  // Mandatory Fallback: After 1s, reveal EVERYTHING regardless of observer
   setTimeout(() => {
     document.querySelectorAll('.reveal, .reveal-up, .reveal-left, .reveal-right, .reveal-scale')
       .forEach(el => el.classList.add('reveal-visible'))
-  }, 1500)
+  }, 1000)
 }
 
 onMounted(() => {
-  nextTick(() => {
-    setTimeout(initAnimations, 100)
-  })
+  setTimeout(initAnimations, 300)
 })
 
 watch(() => route.path, () => {
-  // Wait for route transition to finish
+  // Clear old visible states for the new page
+  document.querySelectorAll('.reveal-visible').forEach(el => el.classList.remove('reveal-visible'))
+
   setTimeout(() => {
     nextTick(() => {
       initAnimations()
     })
-  }, 500)
+  }, 400)
 })
 </script>
 

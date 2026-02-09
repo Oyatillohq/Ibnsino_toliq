@@ -1,122 +1,95 @@
--- 1. CLEAN UP (Optional - be careful if existing data exists)
--- DROP VIEW IF EXISTS student_albums;
--- DROP TABLE IF EXISTS audit_logs;
--- DROP TABLE IF EXISTS certificates;
--- DROP TABLE IF EXISTS students;
--- DROP TABLE IF EXISTS subjects;
+-- 1. BACKUP OLD TABLES (Instead of dropping, we rename them to keep data)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'students') THEN
+        ALTER TABLE students RENAME TO students_backup;
+    END IF;
+    IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'subjects') THEN
+        ALTER TABLE subjects RENAME TO subjects_backup;
+    END IF;
+    -- Note: if 'certificates' already exists with old schema, we might need to recreate it
+    -- For safety, if it doesn't have student_name column, rename it
+    IF EXISTS (SELECT FROM information_schema.columns WHERE table_name = 'certificates' AND column_name = 'student_id') THEN
+        ALTER TABLE certificates RENAME TO certificates_old;
+    END IF;
+END $$;
 
--- 2. CREATE TABLES
-CREATE TABLE students (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    name text NOT NULL UNIQUE,
-    grade text, -- e.g. '7', '11', 'Bitiruvchi'
-    created_at timestamp WITH time zone DEFAULT now()
-);
-
-CREATE TABLE subjects (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    name text NOT NULL UNIQUE,
-    created_at timestamp WITH time zone DEFAULT now()
-);
-
-CREATE TABLE certificates (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-    subject_id uuid REFERENCES subjects(id) ON DELETE RESTRICT,
-    score integer,
-    level text NOT NULL, -- A+, A, B, etc.
-    year integer NOT NULL,
-    image_url text NOT NULL,
-    created_at timestamp WITH time zone DEFAULT now()
-);
-
-CREATE TABLE gallery (
+-- 2. CREATE NEW FLAT STRUCTURE (Matches Admin JS)
+CREATE TABLE IF NOT EXISTS gallery (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     image_url text NOT NULL,
     description text,
     created_at timestamp WITH time zone DEFAULT now()
 );
 
-CREATE TABLE audit_logs (
+-- Flat table for certificates (Matches Admin JS code)
+CREATE TABLE IF NOT EXISTS certificates (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    admin_id uuid REFERENCES auth.users(id),
-    action_type text NOT NULL, -- 'INSERT', 'UPDATE', 'DELETE'
+    student_name text NOT NULL,
+    student_grade text, -- e.g. '7', '11', 'Bitiruvchi'
+    subject text NOT NULL, -- e.g. 'Kimyo', 'Biologiya'
+    certificate_level text NOT NULL, -- A+, A, DTM etc.
+    dtm_score integer,
+    year integer NOT NULL,
+    image_url text NOT NULL,
+    created_at timestamp WITH time zone DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    admin_id uuid,
+    action_type text NOT NULL,
     table_name text NOT NULL,
     record_id uuid,
     details jsonb,
     created_at timestamp WITH time zone DEFAULT now()
 );
 
--- 3. INSERT INITIAL SUBJECTS
-INSERT INTO subjects (name) VALUES 
-('Kimyo'), ('Biologiya'), ('Ona tili'), ('Rus tili'), ('Tarix'), ('Matematika')
-ON CONFLICT (name) DO NOTHING;
-
--- 4. VIEWS FOR AGGREGATION
--- This view replaces the need for complex frontend reduction
+-- 3. CREATE VIEW FOR FRONTEND (Grouping by student)
+DROP VIEW IF EXISTS student_certificates_view;
 CREATE OR REPLACE VIEW student_certificates_view AS
 SELECT 
-    s.id as student_id,
-    s.name as student_name,
-    s.grade as student_grade,
-    c.year,
+    min(id::text) as student_id, -- Used by Frontend as key
+    student_name,
+    student_grade,
+    year,
     jsonb_agg(
         jsonb_build_object(
-            'id', c.id,
-            'subject', sub.name,
-            'level', c.level,
-            'score', c.score,
-            'image_url', c.image_url
-        ) ORDER BY c.level ASC
+            'id', id,
+            'subject', subject,
+            'level', certificate_level,
+            'score', dtm_score,
+            'image_url', image_url
+        ) ORDER BY certificate_level ASC
     ) as certificates,
-    min(c.level) as max_level -- Simplistic approach: A+ < A < B
-FROM students s
-JOIN certificates c ON s.id = c.student_id
-JOIN subjects sub ON c.subject_id = sub.id
-GROUP BY s.id, s.name, s.grade, c.year;
+    min(certificate_level) as max_level
+FROM certificates
+GROUP BY student_name, student_grade, year;
 
--- Grant access to the view
-GRANT SELECT ON student_certificates_view TO anon;
-GRANT SELECT ON student_certificates_view TO authenticated;
-
--- 5. STORAGE BUCKETS
--- (Note: Bucket creation usually happens via Dashboard or Admin API, 
--- but we define policies here)
--- Bucket name: 'certificates'
-
--- 6. SECURITY (RLS)
-ALTER TABLE students ENABLE ROW LEVEL SECURITY;
-ALTER TABLE subjects ENABLE ROW LEVEL SECURITY;
+-- 4. SECURITY (RLS)
 ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE gallery ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
--- 6.1 Public Access
-CREATE POLICY "Public Read Students" ON students FOR SELECT USING (true);
-CREATE POLICY "Public Read Subjects" ON subjects FOR SELECT USING (true);
+-- Public Access
 CREATE POLICY "Public Read Certificates" ON certificates FOR SELECT USING (true);
 CREATE POLICY "Public Read Gallery" ON gallery FOR SELECT USING (true);
 
--- 6.2 Admin Access (Authenticated)
--- Only users present in auth.users can manage data
-CREATE POLICY "Admin All Students" ON students TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
-CREATE POLICY "Admin All Subjects" ON subjects TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
+-- Admin Access
 CREATE POLICY "Admin All Certificates" ON certificates TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
 CREATE POLICY "Admin All Gallery" ON gallery TO authenticated USING (auth.uid() IS NOT NULL) WITH CHECK (auth.uid() IS NOT NULL);
 CREATE POLICY "Admin Read Logs" ON audit_logs TO authenticated USING (auth.uid() IS NOT NULL);
 
--- 6.3 Storage Policies
--- Assuming bucket name is 'media'
--- Allow public read of certificates
-CREATE POLICY "Public Read Media" ON storage.objects FOR SELECT USING (bucket_id = 'media');
+-- GRANT permissions for the view
+GRANT SELECT ON student_certificates_view TO anon;
+GRANT SELECT ON student_certificates_view TO authenticated;
 
--- Allow authenticated admins to upload and delete their files
-CREATE POLICY "Admin Manage Media" ON storage.objects 
-FOR ALL TO authenticated 
-USING (bucket_id = 'media' AND auth.uid() IS NOT NULL)
-WITH CHECK (bucket_id = 'media' AND auth.uid() IS NOT NULL);
+-- 5. STORAGE POLICIES (Bucket: certificates)
+-- Note: Make sure the bucket 'certificates' is set to public in Supabase dashboard
+CREATE POLICY "Public Read Storage" ON storage.objects FOR SELECT USING (bucket_id = 'certificates');
+CREATE POLICY "Admin Manage Storage" ON storage.objects FOR ALL TO authenticated USING (bucket_id = 'certificates') WITH CHECK (bucket_id = 'certificates');
 
--- 7. AUDIT TRIGGER FUNCTION
+-- 6. AUDIT TRIGGER
 CREATE OR REPLACE FUNCTION log_change()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -128,5 +101,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS tr_audit_certs ON certificates;
 CREATE TRIGGER tr_audit_certs AFTER INSERT OR UPDATE OR DELETE ON certificates FOR EACH ROW EXECUTE FUNCTION log_change();
+
+DROP TRIGGER IF EXISTS tr_audit_gallery ON gallery;
 CREATE TRIGGER tr_audit_gallery AFTER INSERT OR UPDATE OR DELETE ON gallery FOR EACH ROW EXECUTE FUNCTION log_change();
