@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-vue-next'
 
 const stats = [
   { label: 'O\'quvchilar', value: 1500, suffix: '+' },
-  { label: 'Oliy o\'quv yurtlariga kirganlar', value: 300, suffix: '+' },
+  { label: 'Oliy o\'quv yurtlariga kirganlar (har yili)', value: 500, suffix: '+' },
   { label: 'Yillik Tajriba', value: 20, suffix: '+' },
   { label: 'Muvaffaqiyat ko\'rsatkichi', value: 95, suffix: '%' }
 ]
