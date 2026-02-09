@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ArrowRight } from 'lucide-vue-next'
 
 const stats = [
   { label: 'O\'quvchilar', value: 1500, suffix: '+' },
@@ -62,6 +63,31 @@ onMounted(() => {
           <span class="stat-label">{{ stat.label }}</span>
         </div>
       </div>
+
+      <div class="stats-action reveal reveal-up" style="transition-delay: 0.6s;">
+        <router-link to="/certificates" class="btn btn-primary stats-btn">
+          <span>Barcha sertifikatlarni ko'rish</span>
+          <ArrowRight :size="20" />
+        </router-link>
+      </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+.stats-action {
+  margin-top: 4rem;
+  display: flex;
+  justify-content: center;
+}
+
+.stats-btn {
+  gap: 1rem;
+  padding: 1.25rem 3rem;
+  font-size: 1.1rem;
+}
+
+.stats-btn:hover {
+  gap: 1.5rem; /* Small micro-animation on hover */
+}
+</style>
