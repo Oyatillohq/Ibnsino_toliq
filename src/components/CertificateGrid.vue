@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 import { certificateService } from '../api/certificateService'
 import CertificateCard from './CertificateCard.vue'
 import { X, ChevronLeft, ChevronRight } from 'lucide-vue-next'
