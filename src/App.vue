@@ -26,7 +26,7 @@ const initAnimations = () => {
 }
 
 onMounted(() => {
-    initAnimations()
+    setTimeout(initAnimations, 500)
 })
 
 // Re-init animations on route change
