@@ -503,45 +503,47 @@
                                 style="position: absolute; top: 10px; right: 10px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">&times;</button>
                         </div>
                     </div>
-                    <!-- Audit Logs -->
-                    <div v-if="activeTab === 'logs'">
-                        <h1 style="margin-bottom: 2rem;">Harakatlar Tarixi (Audit Logs)</h1>
-                        <div class="admin-card">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Admin ID</th>
-                                        <th>Amal</th>
-                                        <th>Jadval</th>
-                                        <th>Sertifikat ID</th>
-                                        <th>Sana</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="log in auditList" :key="log.id">
-                                        <td><small style="color: grey;">{{ log.admin_id?.substring(0,8) }}...</small>
-                                        </td>
-                                        <td>
-                                            <span :style="{ 
+                </div>
+
+                <!-- Audit Logs -->
+                <div v-if="activeTab === 'logs'">
+                    <h1 style="margin-bottom: 2rem;">Harakatlar Tarixi (Audit Logs)</h1>
+                    <div class="admin-card">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Admin ID</th>
+                                    <th>Amal</th>
+                                    <th>Jadval</th>
+                                    <th>Sertifikat ID</th>
+                                    <th>Sana</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="log in auditList" :key="log.id">
+                                    <td><small style="color: grey;">{{ log.admin_id?.substring(0,8) }}...</small>
+                                    </td>
+                                    <td>
+                                        <span :style="{ 
                                             padding: '4px 8px', 
                                             borderRadius: '4px', 
                                             fontSize: '0.8rem',
                                             backgroundColor: log.action_type === 'INSERT' ? 'rgba(0,191,166,0.2)' : 'rgba(244,67,54,0.2)',
                                             color: log.action_type === 'INSERT' ? '#00BFA6' : '#ff8a80'
                                         }">{{ log.action_type }}</span>
-                                        </td>
-                                        <td>{{ log.table_name }}</td>
-                                        <td><small style="color: grey;">{{ log.record_id?.substring(0,8) }}...</small>
-                                        </td>
-                                        <td>{{ new Date(log.created_at).toLocaleString() }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div v-if="loadingLogs" style="padding: 2rem; text-align: center;">Yuklanmoqda...</div>
-                            <div v-if="!loadingLogs && auditList.length === 0"
-                                style="padding: 2rem; text-align: center; color: grey;">Harakatlar topilmadi</div>
-                        </div>
+                                    </td>
+                                    <td>{{ log.table_name }}</td>
+                                    <td><small style="color: grey;">{{ log.record_id?.substring(0,8) }}...</small>
+                                    </td>
+                                    <td>{{ new Date(log.created_at).toLocaleString() }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-if="loadingLogs" style="padding: 2rem; text-align: center;">Yuklanmoqda...</div>
+                        <div v-if="!loadingLogs && auditList.length === 0"
+                            style="padding: 2rem; text-align: center; color: grey;">Harakatlar topilmadi</div>
                     </div>
+                </div>
             </main>
         </div>
     </div>
