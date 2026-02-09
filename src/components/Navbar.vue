@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const isScrolled = ref(false)
 const isMenuOpen = ref(false)
 
@@ -15,32 +17,36 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
+
+// Helper to check if a link is exactly active (handling home vs hash links)
+const isExactlyActive = (path) => {
+  if (path === '/') return route.path === '/' && !route.hash
+  return route.fullPath === path
+}
 </script>
 
 <template>
   <nav class="navbar" :class="{ scrolled: isScrolled }">
     <div class="container navbar-content">
-      <a href="/" class="logo-link">
+      <router-link to="/" class="logo-link">
         <div class="logo-text">IBN <span>SINO</span></div>
-      </a>
+      </router-link>
 
       <div class="desktop-menu">
-        <router-link to="/" class="nav-link">Bosh sahifa</router-link>
-        <router-link to="/#results" class="nav-link">Natijalar</router-link>
-        <router-link to="/#subjects" class="nav-link">Fanlar</router-link>
-        <router-link to="/certificates" class="nav-link">Sertifikatlar</router-link>
-        <router-link to="/#about" class="nav-link">Biz haqimizda</router-link>
-        <router-link to="/#contact" class="nav-link">Aloqa</router-link>
+        <router-link to="/" class="nav-link" :class="{ 'exact-active': isExactlyActive('/') }">Bosh sahifa</router-link>
+        <router-link to="/#results" class="nav-link" :class="{ 'exact-active': isExactlyActive('/#results') }">Natijalar</router-link>
+        <router-link to="/#subjects" class="nav-link" :class="{ 'exact-active': isExactlyActive('/#subjects') }">Fanlar</router-link>
+        <router-link to="/certificates" class="nav-link" :class="{ 'exact-active': route.path === '/certificates' }">Sertifikatlar</router-link>
+        <router-link to="/#about" class="nav-link" :class="{ 'exact-active': isExactlyActive('/#about') }">Biz haqimizda</router-link>
+        <router-link to="/#contact" class="nav-link" :class="{ 'exact-active': isExactlyActive('/#contact') }">Aloqa</router-link>
         <a href="/admin/" class="nav-link" target="_blank">Admin</a>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 1rem;">
-        <button class="mobile-btn" @click="isMenuOpen = !isMenuOpen">
-          <div class="hamburger" :class="{ active: isMenuOpen }">
-            <span></span><span></span><span></span>
-          </div>
-        </button>
-      </div>
+      <button class="mobile-btn" @click="isMenuOpen = !isMenuOpen" aria-label="Menu">
+        <div class="hamburger" :class="{ active: isMenuOpen }">
+          <span></span><span></span><span></span>
+        </div>
+      </button>
     </div>
   </nav>
 
@@ -56,5 +62,8 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Scopes specific navbar styles if needed, else they come from assets/style.css */
+/* Individual transition for hamburger to ensure smoothness */
+.hamburger span {
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
 </style>
