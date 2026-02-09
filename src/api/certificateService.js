@@ -6,12 +6,17 @@ export const certificateService = {
     async getGroupedCertificates({ year, page = 1 }) {
         if (!supabase) return { data: [], count: 0 }
         try {
-            const params = new URLSearchParams({ year: year || '', page: page.toString() })
-            const { data, error } = await supabase.functions.invoke(`api-gateway/certificates?${params.toString()}`, {
-                method: 'GET'
-            })
+            const pageSize = 12
+            let query = supabase.from('student_certificates_view').select('*', { count: 'exact' })
+
+            if (year) query = query.eq('year', year)
+
+            const { data, count, error } = await query
+                .order('max_level', { ascending: true })
+                .range((page - 1) * pageSize, page * pageSize - 1)
+
             if (error) throw error
-            return data || { data: [], count: 0 }
+            return { data: data || [], count: count || 0 }
         } catch (err) {
             console.error("Certificate load error:", err)
             return { data: [], count: 0 }
