@@ -7,12 +7,12 @@ const academyInfo = {
 <template>
   <section id="about" class="section-padding bg-light">
     <div class="container">
-      <div class="about-content reveal reveal-up">
+      <div class="about-content reveal reveal-left">
         <h2 class="section-title">Biz Haqimizda</h2>
         <p class="mission-text">
           {{ academyInfo.mission }}
         </p>
-        <div class="about-card reveal reveal-up delay-200">
+        <div class="about-card reveal reveal-left delay-200">
           <p class="about-desc">
             O'quv markazimiz 20 yildan ortiq vaqtdan beri bo'lajak shifokorlar va olimlarni
             tayyorlab kelmoqda. 7-sinfdan boshlab qabul qilinadigan o'quv dasturi DTM va xalqaro

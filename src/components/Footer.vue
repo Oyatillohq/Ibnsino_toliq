@@ -1,6 +1,6 @@
 <template>
   <footer class="footer">
-    <div class="container footer-content reveal reveal-up">
+    <div class="container footer-content reveal reveal-left">
       <div class="footer-logo">IBN <span>SINO</span> EDUCATION</div>
       <div class="footer-links">
           <a href="#hero">Bosh sahifa</a>

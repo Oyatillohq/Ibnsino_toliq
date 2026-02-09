@@ -9,37 +9,55 @@ const stats = [
 ]
 
 const animatedStats = ref(stats.map(s => ({ ...s, currentValue: 0 })))
+const resultsSection = ref(null)
+let hasAnimated = false
+
+const runStatsAnimation = () => {
+    if (hasAnimated) return
+    hasAnimated = true
+    animatedStats.value.forEach((stat, index) => {
+        const duration = 2000
+        const frames = 60
+        const increment = stat.value / frames
+        let current = 0
+        const timer = setInterval(() => {
+            current += increment
+            if (current >= stat.value) {
+                animatedStats.value[index].currentValue = stat.value
+                clearInterval(timer)
+            } else {
+                animatedStats.value[index].currentValue = Math.floor(current)
+            }
+        }, duration / frames)
+    })
+}
 
 onMounted(() => {
-  animatedStats.value.forEach((stat, index) => {
-    const duration = 2000
-    const frames = 60
-    const increment = stat.value / frames
-    let current = 0
-    const timer = setInterval(() => {
-      current += increment
-      if (current >= stat.value) {
-        animatedStats.value[index].currentValue = stat.value
-        clearInterval(timer)
-      } else {
-        animatedStats.value[index].currentValue = Math.floor(current)
-      }
-    }, duration / frames)
-  })
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                runStatsAnimation()
+            }
+        })
+    }, { threshold: 0.15 })
+
+    if (resultsSection.value) {
+        observer.observe(resultsSection.value)
+    }
 })
 </script>
 
 <template>
-  <section id="results" class="section-padding bg-light reveal">
+  <section id="results" ref="resultsSection" class="section-padding bg-light reveal reveal-left">
     <div class="container">
-      <div class="section-header reveal reveal-up">
+      <div class="section-header reveal reveal-left">
         <h2 class="section-title">Bizning Natijalarimiz</h2>
         <p class="section-desc">Akademiyamizning muvaffaqiyati o'quvchilarimizning natijalarida namoyon bo'ladi.</p>
       </div>
       <div class="results-grid">
         <div v-for="(stat, index) in animatedStats" :key="stat.label" 
-             class="stat-item reveal reveal-up"
-             :style="{ transitionDelay: (index * 100) + 'ms' }">
+             class="stat-item reveal reveal-left"
+             :style="{ transitionDelay: (index * 150) + 'ms' }">
           <span class="stat-val">{{ stat.currentValue }}{{ stat.suffix }}</span>
           <span class="stat-label">{{ stat.label }}</span>
         </div>
