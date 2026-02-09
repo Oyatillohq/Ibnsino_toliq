@@ -1,4 +1,6 @@
 <script setup>
+import { Eye } from 'lucide-vue-next'
+
 defineProps({
   group: Object
 })
@@ -9,7 +11,7 @@ defineProps({
     <div class="cert-img-container">
       <img :src="group.certificates[0].image_url" :alt="group.student_name" class="certificate-image">
       <div class="cert-overlay">
-        <i data-lucide="eye"></i>
+        <Eye :size="32" color="var(--color-accent)" />
         <span>Ko'rish</span>
       </div>
     </div>
