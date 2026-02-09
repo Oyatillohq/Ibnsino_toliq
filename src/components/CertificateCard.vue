@@ -7,7 +7,7 @@ defineProps({
 <template>
   <div class="certificate-card" @click="$emit('select', group)">
     <div class="cert-img-container">
-      <img :src="group.primary_image" :alt="group.student_name" class="certificate-image">
+      <img :src="group.certificates[0].image_url" :alt="group.student_name" class="certificate-image">
       <div class="cert-overlay">
         <i data-lucide="eye"></i>
         <span>Ko'rish</span>
@@ -19,7 +19,7 @@ defineProps({
       </div>
       <h3 class="student-name">{{ group.student_name }}</h3>
       <div class="cert-footer">
-        <span>{{ group.total_certs }} ta sertifikat</span>
+        <span>{{ group.certificates.length }} ta sertifikat</span>
         <span>{{ group.year }}-yil</span>
       </div>
     </div>

@@ -5,9 +5,8 @@ const EDGE_FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/api
 export const certificateService = {
     async getGroupedCertificates({ year, page = 1 }) {
         const params = new URLSearchParams({ year: year || '', page: page.toString() })
-        const { data, error } = await supabase.functions.invoke('api-gateway/certificates', {
-            method: 'GET',
-            queryParams: params
+        const { data, error } = await supabase.functions.invoke(`api-gateway/certificates?${params.toString()}`, {
+            method: 'GET'
         })
         if (error) throw error
         return data

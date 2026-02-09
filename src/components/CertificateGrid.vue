@@ -12,14 +12,14 @@ const yearFilter = ref('')
 const loadData = async () => {
   loading.value = true
   try {
-    const { data, count } = await certificateService.getGroupedCertificates({ 
+    const result = await certificateService.getGroupedCertificates({ 
       year: yearFilter.value, 
       page: page.value 
     })
-    groups.value = data
-    total.value = count
+    groups.value = result.data || []
+    total.value = result.count || 0
   } catch (err) {
-    console.error(err)
+    console.error("Ma'lumot yuklashda xatolik:", err)
   } finally {
     loading.value = false
   }
