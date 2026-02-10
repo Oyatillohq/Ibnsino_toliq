@@ -506,8 +506,9 @@ body {
 /* Gallery */
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1.5rem;
+    justify-content: center;
 }
 
 .gallery-item {
@@ -516,6 +517,8 @@ body {
     overflow: hidden;
     aspect-ratio: 1/1;
     border: 1px solid var(--color-border);
+    max-width: 320px;
+    width: 100%;
     cursor: pointer;
     background: rgba(255, 255, 255, 0.03);
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -559,8 +562,9 @@ body {
 /* Certificates */
 .certificate-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
+    justify-content: center;
 }
 
 .certificate-card {
@@ -573,6 +577,8 @@ body {
     position: relative;
     display: flex;
     flex-direction: column;
+    max-width: 360px;
+    width: 100%;
 }
 
 .certificate-card:hover {
