@@ -226,14 +226,28 @@ const app = createApp({
             finally { loadingGallery.value = false; }
         };
 
+        const extractFilePath = (url) => {
+            if (!url) return null;
+            // Supabase URL format: .../storage/v1/object/public/bucket-name/file-path
+            // We need to extract the part after /public/bucket-name/
+            const parts = url.split('/public/certificates/');
+            return parts.length > 1 ? parts[1] : null;
+        };
+
         const handleDelete = async (cert) => {
             if (!confirm(`"${cert.student_name}" sertifikatini o'chirmoqchimisiz?`)) return;
             loadingList.value = true;
             try {
+                // 1. Storage'dan o'chirish
+                const filePath = extractFilePath(cert.image_url);
+                if (filePath) {
+                    await supabaseClient.storage.from('certificates').remove([filePath]);
+                }
+
+                // 2. Database'dan o'chirish
                 const { error: dbErr } = await supabaseClient.from('certificates').delete().eq('id', cert.id);
                 if (dbErr) throw dbErr;
 
-                // Ro'yxatdan darhol o'chirish
                 certList.value = certList.value.filter(c => c.id !== cert.id);
                 alert("Muvaffaqiyatli o'chirildi.");
             } catch (err) {
@@ -246,6 +260,13 @@ const app = createApp({
         const handleDeleteGallery = async (item) => {
             if (!confirm("O'chirilsinmi?")) return;
             try {
+                // 1. Storage'dan o'chirish
+                const filePath = extractFilePath(item.image_url);
+                if (filePath) {
+                    await supabaseClient.storage.from('certificates').remove([filePath]);
+                }
+
+                // 2. Database'dan o'chirish
                 await supabaseClient.from('gallery').delete().eq('id', item.id);
                 galleryList.value = galleryList.value.filter(g => g.id !== item.id);
             } catch (err) { alert(err.message); }
