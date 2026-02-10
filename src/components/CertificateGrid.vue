@@ -249,80 +249,106 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .full-cert-img {
   max-width: 90vw;
-  max-height: 70vh;
-  border-radius: 12px;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  max-height: 80vh;
+  border-radius: 16px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
   object-fit: contain;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #000;
 }
 
 .nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.3s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10;
 }
 
 .nav-btn:hover:not(:disabled) {
   background: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 0 30px rgba(0, 191, 166, 0.4);
 }
 
 .nav-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.1;
   cursor: not-allowed;
 }
 
 .nav-btn.prev {
-  left: -80px;
+  left: -100px;
 }
 
 .nav-btn.next {
-  right: -80px;
+  right: -100px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1300px) {
   .nav-btn.prev {
-    left: 10px;
+    left: 20px;
   }
 
   .nav-btn.next {
-    right: 10px;
+    right: 20px;
   }
 }
 
 .modal-info {
-  margin-top: 2rem;
+  margin-top: 3rem;
   text-align: center;
   color: white;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .modal-info h3 {
-  font-size: 1.8rem;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 0.8rem;
+  letter-spacing: -0.02em;
+}
+
+.modal-info p {
+  font-size: 1.2rem;
   color: var(--color-accent);
-  margin-bottom: 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .cert-counter {
-  margin-top: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.3rem 1rem;
-  border-radius: 50px;
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1.5rem;
+  border-radius: 100px;
   display: inline-block;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .pagination {

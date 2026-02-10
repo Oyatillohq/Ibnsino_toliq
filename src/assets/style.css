@@ -506,36 +506,46 @@ body {
 /* Gallery */
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
 }
 
 .gallery-item {
     position: relative;
-    border-radius: 24px;
+    border-radius: 32px;
     overflow: hidden;
-    aspect-ratio: 1/1;
+    aspect-ratio: 4/5;
     border: 1px solid var(--color-border);
     cursor: pointer;
+    background: rgba(255, 255, 255, 0.03);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gallery-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: 0.6s;
+    transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gallery-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 191, 166, 0.4);
+    background: linear-gradient(to top, rgba(7, 26, 47, 0.9) 0%, rgba(7, 26, 47, 0) 100%);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+    padding: 2.5rem;
     opacity: 0;
     transition: 0.4s;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(4px);
+}
+
+.gallery-item:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--color-accent);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .gallery-item:hover .gallery-overlay {
@@ -550,40 +560,52 @@ body {
 .certificate-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 2.5rem;
+    gap: 3rem;
 }
 
 .certificate-card {
-    background: var(--color-surface);
-    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 32px;
     overflow: hidden;
     border: 1px solid var(--color-border);
-    transition: 0.4s;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .certificate-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-15px) scale(1.02);
     border-color: var(--color-accent);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
 }
 
 .cert-img-container {
-    height: 250px;
+    height: 280px;
     overflow: hidden;
     position: relative;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .certificate-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: 0.6s;
+    object-fit: contain;
+    transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+    border-radius: 8px;
 }
 
 .cert-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(7, 26, 47, 0.7);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -591,6 +613,8 @@ body {
     gap: 1rem;
     opacity: 0;
     transition: 0.4s;
+    backdrop-filter: blur(8px);
+    z-index: 2;
 }
 
 .certificate-card:hover .cert-overlay {
@@ -598,32 +622,55 @@ body {
 }
 
 .certificate-card:hover .certificate-image {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .cert-info {
-    padding: 2rem;
+    padding: 2.5rem 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
 .cert-level {
-    background: var(--color-accent);
+    background: var(--grad-button);
     color: white;
-    padding: 0.4rem 1rem;
-    border-radius: 50px;
-    font-size: 0.8rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
     font-weight: 800;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .student-name {
-    font-size: 1.5rem;
-    margin: 1rem 0;
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    background: linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .cert-footer {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     color: var(--color-text-light);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Animations Core */
