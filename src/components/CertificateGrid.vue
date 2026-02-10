@@ -136,11 +136,15 @@ onUnmounted(() => {
       <div class="section-header reveal reveal-left">
         <h2 id="certs-title" class="section-title">O'quvchilar Natijalari</h2>
         <div class="filters">
-          <select v-model="yearFilter" @change="loadData(true)" class="filter-select" aria-label="Filter by year">
-            <option value="">Barcha yillar</option>
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-          </select>
+          <div class="filter-tabs">
+            <button class="filter-tab" :class="{ active: yearFilter === '' }" @click="yearFilter = ''; loadData(true)">
+              Barcha yillar
+            </button>
+            <button v-for="year in ['2024', '2025']" :key="year" class="filter-tab"
+              :class="{ active: yearFilter === year }" @click="yearFilter = year; loadData(true)">
+              {{ year }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -225,24 +229,41 @@ onUnmounted(() => {
 }
 
 .filters {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   display: flex;
   justify-content: center;
 }
 
-.filter-select {
-  background: var(--color-surface);
-  color: var(--color-text);
+.filter-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.5rem;
+  border-radius: 100px;
   border: 1px solid var(--color-border);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  outline: none;
-  transition: 0.3s;
+  gap: 0.5rem;
 }
 
-.filter-select:hover {
-  border-color: var(--color-accent);
+.filter-tab {
+  background: transparent;
+  border: none;
+  color: var(--color-text-light);
+  padding: 0.6rem 1.5rem;
+  border-radius: 100px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
+}
+
+.filter-tab:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.filter-tab.active {
+  background: var(--grad-button);
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .modal-image-wrapper {
