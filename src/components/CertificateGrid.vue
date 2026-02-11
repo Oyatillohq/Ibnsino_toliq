@@ -162,7 +162,7 @@ onUnmounted(() => {
                 @click="subjectFilter = ''; loadData(true)">
                 Hammasi
               </button>
-              <button v-for="subj in ['Biologiya', 'Kimyo', 'Ona tili', 'Tarix', 'Matematika']" :key="subj"
+              <button v-for="subj in ['Biologiya', 'Kimyo', 'Ona tili', 'Rus tili', 'Tarix', 'Matematika']" :key="subj"
                 class="filter-tab" :class="{ active: subjectFilter === subj }"
                 @click="subjectFilter = subj; loadData(true)">
                 {{ subj }}
@@ -178,7 +178,7 @@ onUnmounted(() => {
                 @click="levelFilter = ''; loadData(true)">
                 Hammasi
               </button>
-              <button v-for="lvl in ['C1', 'B2', 'Aptis', 'Milliy']" :key="lvl" class="filter-tab"
+              <button v-for="lvl in ['A+', 'A', 'B+', 'B', 'C+', 'C', 'DTM']" :key="lvl" class="filter-tab"
                 :class="{ active: levelFilter === lvl }" @click="levelFilter = lvl; loadData(true)">
                 {{ lvl }}
               </button>
