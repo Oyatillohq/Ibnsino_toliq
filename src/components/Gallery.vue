@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Eye, Image as ImageIcon } from 'lucide-vue-next'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { Eye, Image as ImageIcon, X, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { galleryService } from '../api/galleryService'
 
 const galleryItems = ref([])
 const loading = ref(true)
 const errorMessage = ref('')
+const selectedImageIndex = ref(null)
+const isModalOpen = ref(false)
 
 const fetchGallery = async () => {
   loading.value = true
@@ -18,8 +20,53 @@ const fetchGallery = async () => {
   loading.value = false
 }
 
+const openModal = (index) => {
+  selectedImageIndex.value = index
+  isModalOpen.value = true
+  // Force browser to not scroll background
+  document.body.style.overflow = 'hidden'
+}
+
+const closeModal = () => {
+  isModalOpen.value = false
+  document.body.style.overflow = ''
+  setTimeout(() => {
+    selectedImageIndex.value = null
+  }, 300)
+}
+
+const nextImage = () => {
+  if (selectedImageIndex.value === null) return;
+  if (selectedImageIndex.value < galleryItems.value.length - 1) {
+    selectedImageIndex.value++;
+  } else {
+    selectedImageIndex.value = 0; // Loop back to start
+  }
+}
+
+const prevImage = () => {
+  if (selectedImageIndex.value === null) return;
+  if (selectedImageIndex.value > 0) {
+    selectedImageIndex.value--;
+  } else {
+    selectedImageIndex.value = galleryItems.value.length - 1; // Loop to end
+  }
+}
+
+const handleKeydown = (e) => {
+  if (!isModalOpen.value) return
+  if (e.key === 'Escape') closeModal()
+  if (e.key === 'ArrowRight') nextImage()
+  if (e.key === 'ArrowLeft') prevImage()
+}
+
 onMounted(() => {
   fetchGallery()
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -46,15 +93,40 @@ onMounted(() => {
 
       <div v-else class="gallery-grid">
         <div v-for="(item, index) in galleryItems" :key="item.id" class="gallery-item reveal reveal-up"
-          :style="{ transitionDelay: (index % 3 * 100) + 'ms' }">
+          :style="{ transitionDelay: (index % 3 * 100) + 'ms' }" @click="openModal(index)">
           <img :src="item.image_url" :alt="item.description || 'Academy Atmosphere'" class="gallery-image"
-            loading="lazy">
+            loading="lazy" decoding="async">
           <div class="gallery-overlay">
             <Eye :size="32" color="white" />
             <p v-if="item.description" class="img-desc">{{ item.description }}</p>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="modal" :class="{ active: isModalOpen }" @click.self="closeModal">
+      <button class="modal-close" @click="closeModal" aria-label="Close">
+        <X :size="24" />
+      </button>
+
+      <button v-if="galleryItems.length > 1" class="nav-btn prev" @click.stop="prevImage" aria-label="Previous">
+        <ChevronLeft :size="32" />
+      </button>
+
+      <div class="modal-content" v-if="selectedImageIndex !== null && galleryItems[selectedImageIndex]">
+        <div class="modal-image-wrapper">
+          <img :src="galleryItems[selectedImageIndex].image_url" :alt="galleryItems[selectedImageIndex].description"
+            class="full-cert-img">
+        </div>
+        <div class="modal-info" v-if="galleryItems[selectedImageIndex].description">
+          <p>{{ galleryItems[selectedImageIndex].description }}</p>
+        </div>
+      </div>
+
+      <button v-if="galleryItems.length > 1" class="nav-btn next" @click.stop="nextImage" aria-label="Next">
+        <ChevronRight :size="32" />
+      </button>
     </div>
   </section>
 </template>
