@@ -359,18 +359,17 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 1000px;
   margin: 0 auto;
 }
 
 .full-cert-img {
-  max-width: 90vw;
-  max-height: 80vh;
-  border-radius: 16px;
+  max-width: 95vw;
+  max-height: 90vh;
+  border-radius: 8px;
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
   object-fit: contain;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #000;
+  background: #fff;
 }
 
 .nav-btn {
