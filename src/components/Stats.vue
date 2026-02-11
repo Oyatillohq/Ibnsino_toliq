@@ -13,38 +13,46 @@ const animatedStats = ref(stats.map(s => ({ ...s, currentValue: 0 })))
 const resultsSection = ref(null)
 let hasAnimated = false
 
+const intervalIds = []
+
 const runStatsAnimation = () => {
-    if (hasAnimated) return
-    hasAnimated = true
-    animatedStats.value.forEach((stat, index) => {
-        const duration = 2000
-        const frames = 60
-        const increment = stat.value / frames
-        let current = 0
-        const timer = setInterval(() => {
-            current += increment
-            if (current >= stat.value) {
-                animatedStats.value[index].currentValue = stat.value
-                clearInterval(timer)
-            } else {
-                animatedStats.value[index].currentValue = Math.floor(current)
-            }
-        }, duration / frames)
-    })
+  if (hasAnimated) return
+  hasAnimated = true
+  animatedStats.value.forEach((stat, index) => {
+    const duration = 2000
+    const frames = 60
+    const increment = stat.value / frames
+    let current = 0
+    const timer = setInterval(() => {
+      current += increment
+      if (current >= stat.value) {
+        animatedStats.value[index].currentValue = stat.value
+        clearInterval(timer)
+      } else {
+        animatedStats.value[index].currentValue = Math.floor(current)
+      }
+    }, duration / frames)
+    intervalIds.push(timer)
+  })
 }
 
 onMounted(() => {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                runStatsAnimation()
-            }
-        })
-    }, { threshold: 0.15 })
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        runStatsAnimation()
+      }
+    })
+  }, { threshold: 0.15 })
 
-    if (resultsSection.value) {
-        observer.observe(resultsSection.value)
-    }
+  if (resultsSection.value) {
+    observer.observe(resultsSection.value)
+  }
+})
+
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  intervalIds.forEach(id => clearInterval(id))
 })
 </script>
 
@@ -56,9 +64,8 @@ onMounted(() => {
         <p class="section-desc">Akademiyamizning muvaffaqiyati o'quvchilarimizning natijalarida namoyon bo'ladi.</p>
       </div>
       <div class="results-grid">
-        <div v-for="(stat, index) in animatedStats" :key="stat.label" 
-             class="stat-item reveal reveal-left"
-             :style="{ transitionDelay: (index * 150) + 'ms' }">
+        <div v-for="(stat, index) in animatedStats" :key="stat.label" class="stat-item reveal reveal-left"
+          :style="{ transitionDelay: (index * 150) + 'ms' }">
           <span class="stat-val">{{ stat.currentValue }}{{ stat.suffix }}</span>
           <span class="stat-label">{{ stat.label }}</span>
           <span v-if="stat.subLabel" class="stat-sub-label">{{ stat.subLabel }}</span>
@@ -89,7 +96,8 @@ onMounted(() => {
 }
 
 .stats-btn:hover {
-  gap: 1.5rem; /* Small micro-animation on hover */
+  gap: 1.5rem;
+  /* Small micro-animation on hover */
 }
 
 .stat-sub-label {
