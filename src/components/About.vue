@@ -23,8 +23,8 @@ const academyInfo = {
             <h3>Yotoqxona Xizmati</h3>
             <p>
               Uzoq viloyatlardan kelgan o'quvchilarimiz uchun barcha sharoitlarga ega,
-              shinam va xavfsiz yotoqxona xizmati mavjud. O'quvchilar uchun 3 mahal issiq ovqat,
-              dars tayyorlash uchun maxsus xonalar va doimiy nazorat ta'minlangan.
+              shinam va xavfsiz yotoqxona xizmati mavjud. O'quvchilar uchun issiq ovqatlar va doimiy nazorat
+              ta'minlangan.
             </p>
           </div>
         </div>
