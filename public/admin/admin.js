@@ -285,7 +285,93 @@ const app = createApp({
             }
         };
 
+
+        // --- SYSTEM CLEANUP ---
+        const cleaning = ref(false);
+        const cleanupResult = ref('');
+
+        const cleanupStorage = async () => {
+            if (!confirm("Diqqat! Bu amal bazada mavjud bo'lmagan barcha rasmlarni butunlay o'chirib yuboradi. Davom etishni xohlaysizmi?")) return;
+            cleaning.value = true;
+            cleanupResult.value = "Tahlil qilinmoqda...";
+
+            try {
+                // 1. Bazadagi ishlatilayotgan barcha rasmlar ro'yxatini olish (Certificates va Gallery)
+                const { data: certs, error: cErr } = await supabaseClient.from('certificates').select('image_url');
+                const { data: galleries, error: gErr } = await supabaseClient.from('gallery').select('image_url');
+
+                if (cErr || gErr) throw new Error("Ma'lumotlar bazasini o'qishda xatolik");
+
+                // Faqat fayl nomlarini ajratib olamiz (URL ichidan)
+                const usedFileNames = new Set();
+                const extractName = (url) => {
+                    if (!url) return null;
+                    const parts = url.split('/');
+                    return parts[parts.length - 1]; // Oxirgi qism (masalan: 123_cert.jpg)
+                };
+
+                certs?.forEach(c => { const n = extractName(c.image_url); if (n) usedFileNames.add(n); });
+                galleries?.forEach(g => { const n = extractName(g.image_url); if (n) usedFileNames.add(n); });
+
+                // 2. Storage'dagi barcha fayllarni olish (certificates papkasi)
+                const { data: certFiles, error: sfErr1 } = await supabaseClient.storage.from('certificates').list('certificates', { limit: 1000 });
+                if (sfErr1) throw sfErr1;
+
+                // Storage'dagi barcha fayllarni olish (gallery papkasi)
+                const { data: gallFiles, error: sfErr2 } = await supabaseClient.storage.from('certificates').list('gallery', { limit: 1000 });
+                if (sfErr2) throw sfErr2;
+
+                // 3. Solishtirish va o'chirish ro'yxatini tuzish (Fayl nomi bo'yicha)
+                const filesToDelete = [];
+
+                if (certFiles) {
+                    certFiles.forEach(f => {
+                        if (f.name === '.emptyFolderPlaceholder') return;
+                        if (!usedFileNames.has(f.name)) {
+                            filesToDelete.push(`certificates/${f.name}`);
+                        }
+                    });
+                }
+
+                if (gallFiles) {
+                    gallFiles.forEach(f => {
+                        if (f.name === '.emptyFolderPlaceholder') return;
+                        if (!usedFileNames.has(f.name)) {
+                            filesToDelete.push(`gallery/${f.name}`);
+                        }
+                    });
+                }
+
+                if (filesToDelete.length === 0) {
+                    cleanupResult.value = "Tozalash shart emas. Ortiqcha fayllar topilmadi.";
+                    alert("Xotira toza! Ortiqcha fayllar yo'q.");
+                    return;
+                }
+
+                const confirmMsg = `${filesToDelete.length} ta keraksiz rasm topildi.\nUlarni o'chirib tashlaymi?`;
+                if (!confirm(confirmMsg)) {
+                    cleanupResult.value = "Amal bekor qilindi.";
+                    return;
+                }
+
+                // 4. O'chirish (Batch delete)
+                const { error: delErr } = await supabaseClient.storage.from('certificates').remove(filesToDelete);
+
+                if (delErr) throw delErr;
+
+                cleanupResult.value = `Muvaffaqiyatli! ${filesToDelete.length} ta keraksiz rasm o'chirildi.`;
+                alert(`Tozalandi! ${filesToDelete.length} ta fayl o'chirildi.`);
+
+            } catch (err) {
+                console.error(err);
+                cleanupResult.value = "Xatolik: " + err.message;
+            } finally {
+                cleaning.value = false;
+            }
+        };
+
         return {
+            cleanupStorage, cleaning, cleanupResult,
             email, password, session, loading, error, success, activeTab,
             studentInfo, certificateSlots, addSlot, removeSlot, onFileChange,
             certList, loadingList, adminSearch, adminPage, adminTotalPages,

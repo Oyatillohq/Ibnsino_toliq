@@ -51,7 +51,8 @@ const initAnimations = () => {
 const selectedGroup = ref(null)
 const currentCertIndex = ref(0)
 const isModalActive = ref(false)
-const errorMessage = ref('')
+const subjectFilter = ref('')
+const levelFilter = ref('')
 
 const loadData = async (resetPage = false) => {
   if (resetPage) page.value = 1
@@ -59,6 +60,8 @@ const loadData = async (resetPage = false) => {
   try {
     const result = await certificateService.getGroupedCertificates({
       year: yearFilter.value,
+      subject: subjectFilter.value,
+      level: levelFilter.value,
       page: page.value
     })
     groups.value = result.data || []
@@ -135,15 +138,51 @@ onUnmounted(() => {
     <div class="container">
       <div class="section-header reveal reveal-left">
         <h2 id="certs-title" class="section-title">O'quvchilar Natijalari</h2>
-        <div class="filters">
-          <div class="filter-tabs">
-            <button class="filter-tab" :class="{ active: yearFilter === '' }" @click="yearFilter = ''; loadData(true)">
-              Barcha yillar
-            </button>
-            <button v-for="year in ['2024', '2025']" :key="year" class="filter-tab"
-              :class="{ active: yearFilter === year }" @click="yearFilter = year; loadData(true)">
-              {{ year }}
-            </button>
+        <div class="filters-container">
+          <!-- Yillar -->
+          <div class="filter-group">
+            <span class="filter-label">Yil:</span>
+            <div class="filter-tabs">
+              <button class="filter-tab" :class="{ active: yearFilter === '' }"
+                @click="yearFilter = ''; loadData(true)">
+                Hammasi
+              </button>
+              <button v-for="year in ['2024', '2025']" :key="year" class="filter-tab"
+                :class="{ active: yearFilter === year }" @click="yearFilter = year; loadData(true)">
+                {{ year }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Fanlar -->
+          <div class="filter-group">
+            <span class="filter-label">Fan:</span>
+            <div class="filter-tabs">
+              <button class="filter-tab" :class="{ active: subjectFilter === '' }"
+                @click="subjectFilter = ''; loadData(true)">
+                Hammasi
+              </button>
+              <button v-for="subj in ['Biologiya', 'Kimyo', 'Ona tili', 'Tarix', 'Matematika']" :key="subj"
+                class="filter-tab" :class="{ active: subjectFilter === subj }"
+                @click="subjectFilter = subj; loadData(true)">
+                {{ subj }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Darajalar -->
+          <div class="filter-group">
+            <span class="filter-label">Daraja:</span>
+            <div class="filter-tabs">
+              <button class="filter-tab" :class="{ active: levelFilter === '' }"
+                @click="levelFilter = ''; loadData(true)">
+                Hammasi
+              </button>
+              <button v-for="lvl in ['C1', 'B2', 'Aptis', 'Milliy']" :key="lvl" class="filter-tab"
+                :class="{ active: levelFilter === lvl }" @click="levelFilter = lvl; loadData(true)">
+                {{ lvl }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -228,31 +267,53 @@ onUnmounted(() => {
   color: var(--color-text-light);
 }
 
-.filters {
-  margin-bottom: 3rem;
+.filters-container {
+  margin-top: 2rem;
   display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
   justify-content: center;
+}
+
+.filter-label {
+  font-weight: 800;
+  color: var(--color-accent);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  min-width: 60px;
 }
 
 .filter-tabs {
   display: flex;
   background: rgba(255, 255, 255, 0.03);
-  padding: 0.5rem;
+  padding: 0.4rem;
   border-radius: 100px;
   border: 1px solid var(--color-border);
-  gap: 0.5rem;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .filter-tab {
   background: transparent;
   border: none;
   color: var(--color-text-light);
-  padding: 0.6rem 1.5rem;
+  padding: 0.5rem 1.2rem;
   border-radius: 100px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .filter-tab:hover {
@@ -264,6 +325,18 @@ onUnmounted(() => {
   background: var(--grad-button);
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .filter-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-tabs {
+    border-radius: 20px;
+    padding: 0.5rem;
+  }
 }
 
 .modal-image-wrapper {

@@ -1,20 +1,21 @@
 import { supabase } from './supabase'
 
 export const certificateService = {
-    async getGroupedCertificates({ year, page = 1 }) {
+    async getGroupedCertificates({ year, subject, level, page = 1 }) {
         if (!supabase) {
             return {
                 data: [],
                 count: 0,
-                error: "Supabase ulanishi mavjud emas. Netlify-da VITE_SUPABASE_URL va VITE_SUPABASE_ANON_KEY sozlangani va sayt qayta deploy qilinganiga ishonch hosil qiling."
+                error: "Supabase ulanishi mavjud emas."
             }
         }
         try {
             const pageSize = 12
-            // View-dan ma'lumot olish
             let query = supabase.from('student_certificates_view').select('*', { count: 'exact' })
 
             if (year) query = query.eq('year', year)
+            if (subject) query = query.contains('subjects', [subject])
+            if (level) query = query.contains('levels', [level])
 
             const { data, count, error } = await query
                 .order('max_level', { ascending: true })
