@@ -770,6 +770,7 @@ body {
 
     .hero {
         text-align: center;
+        padding-top: calc(var(--navbar-height) + 2rem);
     }
 
     .hero-btns {
@@ -780,5 +781,110 @@ body {
     .nav-btn.next {
         width: 50px;
         height: 50px;
+        background: rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Kichik telefonlar uchun (iPhone SE, Galaxy S5 va h.k.) */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .hero-title {
+        font-size: 2.8rem;
+    }
+
+    .section-title {
+        font-size: 2.2rem;
+    }
+
+    .btn {
+        padding: 0.8rem 2rem;
+        width: 100%;
+    }
+
+    .results-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.8rem;
+        justify-content: center;
+    }
+
+    /* Galereya rasmlarini mobile da kichraytirish va o'rtaga joylash */
+    .gallery-item {
+        max-width: 160px;
+        margin: 0 auto;
+    }
+
+    .certificate-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .certificate-card {
+        max-width: 100%;
+    }
+
+    /* Modal mobil moslashuvi */
+    .nav-btn {
+        position: fixed;
+        width: 45px;
+        height: 45px;
+        top: auto;
+        bottom: 30px;
+        transform: none;
+        z-index: 2002;
+    }
+
+    .nav-btn.prev {
+        left: 20px;
+    }
+
+    .nav-btn.next {
+        right: 20px;
+    }
+
+    .modal-image-wrapper {
+        padding-bottom: 60px;
+        /* Tugmalar uchun joy */
+    }
+
+    .full-cert-img {
+        max-height: 60vh;
+        max-width: 95vw;
+    }
+
+    .modal-info h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Juda kichik ekranlar (320px - 360px) */
+@media (max-width: 374px) {
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .section-header {
+        margin-bottom: 3rem;
+    }
+
+    .hero-badge {
+        font-size: 0.7rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .filter-tab {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .stat-val {
+        font-size: 2.5rem;
     }
 }
