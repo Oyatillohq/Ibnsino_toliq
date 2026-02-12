@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { createClient } from "@supabase/supabase-js"
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -31,7 +31,7 @@ serve(async (req) => {
             if (year) query = query.eq('year', year)
 
             const { data, count, error } = await query
-                .order('max_level', { ascending: true })
+                .order('max_level', { ascending: false })
                 .range((page - 1) * pageSize, page * pageSize - 1)
 
             if (error) throw error
@@ -44,17 +44,18 @@ serve(async (req) => {
         if (method === 'POST' && path === 'upload') {
             // Basic Auth Check
             const authHeader = req.headers.get('Authorization')
-            const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader?.replace('Bearer ', ''))
+            const token = authHeader?.replace('Bearer ', '') || ''
+            const { data: { user }, error: authError } = await supabase.auth.getUser(token)
             if (authError || !user) {
                 return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
             }
 
             const formData = await req.formData()
-            const studentName = formData.get('student_name')
-            const grade = formData.get('grade')
-            const year = formData.get('year')
-            const subjectId = formData.get('subject_id')
-            const level = formData.get('level')
+            const studentName = formData.get('student_name') as string
+            const grade = formData.get('grade') as string
+            const year = formData.get('year') as string
+            const subjectId = formData.get('subject_id') as string
+            const level = formData.get('level') as string
             const file = formData.get('file') as File
 
             // Validation
@@ -80,6 +81,10 @@ serve(async (req) => {
                     .single()
                 if (nsErr) throw nsErr
                 student = newStudent
+            }
+
+            if (!student) {
+                throw new Error('Could not find or create student')
             }
 
             // 2. Upload to Storage
@@ -110,7 +115,8 @@ serve(async (req) => {
         return new Response(JSON.stringify({ error: 'Not Found' }), { status: 404, headers: corsHeaders })
 
     } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        return new Response(JSON.stringify({ error: errorMessage }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })

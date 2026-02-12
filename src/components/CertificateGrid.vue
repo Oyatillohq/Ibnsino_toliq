@@ -108,7 +108,41 @@ const loadData = async (resetPage = false) => {
   }
 }
 
-// ... (openModal, closeModal, etc. remains same) ...
+const openModal = (group) => {
+  selectedGroup.value = group
+  currentCertIndex.value = 0
+  isModalActive.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+const closeModal = () => {
+  isModalActive.value = false
+  document.body.style.overflow = ''
+  setTimeout(() => {
+    selectedGroup.value = null
+    currentCertIndex.value = 0
+  }, 300)
+}
+
+const nextCert = () => {
+  if (selectedGroup.value && currentCertIndex.value < selectedGroup.value.certificates.length - 1) {
+    currentCertIndex.value++
+  }
+}
+
+const prevCert = () => {
+  if (selectedGroup.value && currentCertIndex.value > 0) {
+    currentCertIndex.value--
+  }
+}
+
+const handleKeydown = (e) => {
+  if (!isModalActive.value) return
+  
+  if (e.key === 'Escape') closeModal()
+  if (e.key === 'ArrowRight') nextCert()
+  if (e.key === 'ArrowLeft') prevCert()
+}
 
 onMounted(() => {
   syncFiltersWithUrl()
