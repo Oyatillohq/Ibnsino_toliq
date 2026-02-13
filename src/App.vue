@@ -1,5 +1,5 @@
 <script setup>
-import Navbar from './components/Navbar.vue'
+import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import { onMounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
@@ -60,7 +60,7 @@ watch(() => route.path, () => {
 
 <template>
   <div class="app-wrapper">
-    <Navbar />
+    <Header />
     <main>
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">

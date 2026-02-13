@@ -21,25 +21,23 @@ const subjects = [
 </script>
 
 <template>
-  <section id="subjects" class="section-padding bg-white">
+  <section id="courses" class="section-padding bg-white">
     <div class="container">
       <div class="section-header reveal reveal-left">
         <h2 class="section-title">O'quv Yo'nalishlari</h2>
         <p class="section-desc">Akademiyamizda fanlar mutaxassislik darajasiga ko'ra guruhlangan.</p>
       </div>
 
-      <div v-for="(cat, catIndex) in subjects" :key="cat.category" 
-           class="reveal reveal-left"
-           :style="{ marginTop: catIndex > 0 ? '4rem' : '0' }">
+      <div v-for="(cat, catIndex) in subjects" :key="cat.category" class="reveal reveal-left"
+        :style="{ marginTop: catIndex > 0 ? '4rem' : '0' }">
         <h3 class="category-title">
           {{ cat.category }}
         </h3>
         <div class="features-grid">
-          <div v-for="(item, index) in cat.items" :key="item.name" 
-               class="feature-card reveal reveal-left"
-               :style="{ transitionDelay: (index * 100) + 'ms' }">
+          <div v-for="(item, index) in cat.items" :key="item.name" class="feature-card reveal reveal-left"
+            :style="{ transitionDelay: (index * 100) + 'ms' }">
             <div class="feature-icon-box"
-                 :style="{ background: catIndex === 0 ? 'rgba(0, 191, 166, 0.1)' : 'rgba(50, 140, 193, 0.1)', color: catIndex === 0 ? 'var(--color-accent)' : 'var(--color-secondary)' }">
+              :style="{ background: catIndex === 0 ? 'rgba(0, 191, 166, 0.1)' : 'rgba(50, 140, 193, 0.1)', color: catIndex === 0 ? 'var(--color-accent)' : 'var(--color-secondary)' }">
               <component :is="item.icon" :size="32" />
             </div>
             <h4>{{ item.name }}</h4>
@@ -53,14 +51,15 @@ const subjects = [
 
 <style scoped>
 .category-title {
-  color: white; 
-  margin-bottom: 2rem; 
-  border-left: 4px solid var(--color-accent); 
+  color: white;
+  margin-bottom: 2rem;
+  border-left: 4px solid var(--color-accent);
   padding-left: 1rem;
 }
+
 .feature-desc {
-  color: rgba(255, 255, 255, 0.7); 
-  margin-top: 0.5rem; 
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.5rem;
   font-size: 0.95rem;
 }
 </style>

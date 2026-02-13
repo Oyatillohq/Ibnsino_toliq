@@ -1,10 +1,10 @@
 <script setup>
-import CertificateGrid from '../components/CertificateGrid.vue'
+import Certificates from '../components/Certificates.vue'
 </script>
 
 <template>
   <div class="certificates-view page-padding">
-    <CertificateGrid />
+    <Certificates />
   </div>
 </template>
 
